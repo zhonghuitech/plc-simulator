@@ -50,6 +50,18 @@ public class ByteUtils {
                         (b[0] & 0xFF) << 8);
     }
 
+    /**
+     * Small-Edien
+     * @param address
+     * @return
+     */
+    public static short byteArrayToShortS(byte[] address) {
+        byte[] addr = new byte[2];
+        addr[0] = address[1];
+        addr[1] = address[0];
+        return ByteUtils.byteArrayToShort(addr);
+    }
+
     public static void main(String[] args) {
         byte[] bytes = new byte[]{(byte) 0xfe, (byte) 0x02, (byte) 0x00, (byte) 0x00};
         System.out.println(byteArrayToInt(bytes));
