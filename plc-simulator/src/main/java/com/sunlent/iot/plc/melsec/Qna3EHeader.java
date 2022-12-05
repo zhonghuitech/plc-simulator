@@ -44,6 +44,11 @@ public class Qna3EHeader {
      */
     private byte[] cpuTimer = new byte[2];
 
+    /**
+     * 操作指令
+     * 0104 代表读取
+     * 0114 代表写入
+     */
     private byte[] command = new byte[2];
 
     private byte[] subCommand = new byte[2];

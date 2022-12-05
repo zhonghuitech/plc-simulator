@@ -58,10 +58,10 @@ public class Qna3EWorker extends BaseWorker {
                             + ", Write data to address: " + address + ", write data: " + LogUtils.getBytesString(qna3ERequestItem.getData()));
 
                     write(address, qna3ERequestItem.getData());
-                    byte[] resBuffer = new byte[11];
-                    System.arraycopy(buffer, 0, resBuffer, 0, 11);
+                    byte[] resBuffer = new byte[n];
+                    System.arraycopy(buffer, 0, resBuffer, 0, n);
                     resBuffer[0] = (byte) 0xd0;
-                    out.write(resBuffer, 0, n);
+                    out.write(resBuffer, 0, resBuffer.length);
                 }
             }
             LogUtils.log("handleClient finished.");
