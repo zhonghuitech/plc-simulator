@@ -1,8 +1,8 @@
 # plc-simulator
-A plc simulator program, which supports lots of main plcs.
+PLC simulators program (Java), which supports lots of main plcs.
 
 ## Usage
-Run `MainSimulator` 
+Run `MainSimulator`  (in plc-simulator-demo pkg.)
 
 ## Supported PLCs
 ###  Siemens 
