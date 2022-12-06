@@ -49,4 +49,8 @@ public class Qna3ERequestItem {
     public byte getSofCode() {
         return sofCode;
     }
+
+    public byte[] getDataLength() {
+        return dataLength;
+    }
 }

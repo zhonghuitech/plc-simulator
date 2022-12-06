@@ -59,9 +59,12 @@ public class Qna3EWorker extends BaseWorker {
                     status = true;
                 } else if (codeEnum == Qna3EComCode.ComCodeEnum.ReadVar) {
                     byte[] readV = read(address);
-                    byte[] resBuffer = new byte[readV.length + PLCConstents.Qna3E_WRITE_SUCCESS.length];
+                    byte[] readLenB = qna3ERequestItem.getDataLength();
+                    short readLenShort = ByteUtils.byteArrayToShortL(readLenB);
+                    byte[] resBuffer = new byte[(readLenShort * 2) + PLCConstents.Qna3E_WRITE_SUCCESS.length];
+
                     LogUtils.log("__Read data from address: " + address + ", Data Length=" + ByteUtils.byteArrayToShortL(qna3EHeader.getDataLen())
-                            + "read data value: " + LogUtils.getBytesString(readV));
+                            + ", read data value: " + LogUtils.getBytesString(readV) + ", read dataLen:" + (2 * readLenShort));
 
                     System.arraycopy(PLCConstents.Qna3E_WRITE_SUCCESS, 0, resBuffer, 0, PLCConstents.Qna3E_WRITE_SUCCESS.length);
                     System.arraycopy(readV, 0, resBuffer, PLCConstents.Qna3E_WRITE_SUCCESS.length, readV.length);
@@ -73,6 +76,7 @@ public class Qna3EWorker extends BaseWorker {
                     resBuffer[7] = dataLenArr[0];
                     resBuffer[8] = dataLenArr[1];
 
+                    LogUtils.log("Read Res buffer:" + LogUtils.getBytesString(resBuffer));
                     out.write(resBuffer, 0, resBuffer.length);
                     status = true;
                 }
