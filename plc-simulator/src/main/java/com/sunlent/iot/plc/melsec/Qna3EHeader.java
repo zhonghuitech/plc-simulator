@@ -45,7 +45,7 @@ public class Qna3EHeader {
     private byte[] cpuTimer = new byte[2];
 
     /**
-     * 操作指令
+     * 操作指令，类似S7里的funcode
      * 0104 代表读取
      * 0114 代表写入
      */
@@ -73,5 +73,13 @@ public class Qna3EHeader {
 
     public byte[] getDataLen() {
         return dataLen;
+    }
+
+    public byte[] getCommand() {
+        return command;
+    }
+
+    public byte[] getSubCommand() {
+        return subCommand;
     }
 }

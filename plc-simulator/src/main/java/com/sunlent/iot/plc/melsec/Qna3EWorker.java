@@ -50,19 +50,22 @@ public class Qna3EWorker extends BaseWorker {
 
 
                 Qna3ERequestItem qna3ERequestItem = new Qna3ERequestItem(buffer);
+                Qna3EComCode.ComCodeEnum codeEnum = Qna3EComCode.ComCodeEnum.from(qna3EHeader.getCommand());
 
-                // 0xa8 表示D点
-                if ((byte) 0xa8 == qna3ERequestItem.getSofCode()) {
-                    String address = getAddress(qna3ERequestItem.getAddress());
-                    LogUtils.log("Data Length=" + ByteUtils.byteArrayToShortS(qna3EHeader.getDataLen())
-                            + ", Write data to address: " + address + ", write data: " + LogUtils.getBytesString(qna3ERequestItem.getData()));
+                String address = getAddress(qna3ERequestItem.getAddress(), qna3ERequestItem.getSofCode());
+                LogUtils.log("Data Length=" + ByteUtils.byteArrayToShortS(qna3EHeader.getDataLen())
+                        + ", Write data to address: " + address + ", write data: " + LogUtils.getBytesString(qna3ERequestItem.getData()));
 
+                if (codeEnum == Qna3EComCode.ComCodeEnum.WriteVar) {
                     write(address, qna3ERequestItem.getData());
-                    byte[] resBuffer = new byte[n];
-                    System.arraycopy(buffer, 0, resBuffer, 0, n);
-                    resBuffer[0] = (byte) 0xd0;
-                    out.write(resBuffer, 0, resBuffer.length);
+                } else if (codeEnum == Qna3EComCode.ComCodeEnum.ReadVar) {
+                    byte[] readV = read(address);
                 }
+
+                byte[] resBuffer = new byte[n];
+                System.arraycopy(buffer, 0, resBuffer, 0, n);
+                resBuffer[0] = (byte) 0xd0;
+                out.write(resBuffer, 0, resBuffer.length);
             }
             LogUtils.log("handleClient finished.");
         } catch (IOException ioException) {
@@ -72,13 +75,22 @@ public class Qna3EWorker extends BaseWorker {
         }
     }
 
-    private String getAddress(byte[] address) {
+    private String getAddress(byte[] address, byte addrType) {
         // TO Big-Ed
         byte[] addr = new byte[2];
         addr[0] = address[1];
         addr[1] = address[0];
         short addrV = ByteUtils.byteArrayToShort(addr);
-        return "D" + addrV;
+        StringBuilder stringBuilder = new StringBuilder();
+
+        /**
+         * 0xA8 表示D 点
+         */
+        if ((byte) 0xa8 == addrType) {
+            stringBuilder.append("D");
+        }
+        stringBuilder.append(addrV);
+        return stringBuilder.toString();
     }
 
     @Override
