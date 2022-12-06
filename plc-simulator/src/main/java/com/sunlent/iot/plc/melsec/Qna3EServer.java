@@ -29,17 +29,17 @@ public class Qna3EServer extends BaseServer {
     @Override
     public void run() {
         try {
-            LogUtils.log(this.name + " 等待连接，端口号：" + this.port);
+            LogUtils.log(this.name + " waiting for connect，listen port：" + this.port);
             Socket client = this.socket.accept();
             this.countPlusOne();
-            LogUtils.log("新连接接入 : InetAddress = "
+            LogUtils.log("new access : InetAddress = "
                     + this.socket);
-            LogUtils.log("超时时间：" + socket.getSoTimeout() + ", current:" + count);
+            LogUtils.log("timeout：" + socket.getSoTimeout() + ", current:" + count);
             if (this.getCount() < MAX_CONNECT_COUNT) {
                 new Qna3EWorker(client, count).run();
             }
         } catch (IOException e) {
-            LogUtils.log("异常" + e.getMessage());
+            LogUtils.log("exception" + e.getMessage());
         }
     }
 

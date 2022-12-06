@@ -12,7 +12,7 @@ import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * 见文档：
+ * Ref：
  * <a href="https://blog.csdn.net/wy749929317/article/details/124144389">三菱PLC MC协议</a>
  *
  * @author aborn (jiangguobao)
@@ -39,22 +39,27 @@ public class Qna3EWorker extends BaseWorker {
 
             byte[] buffer = new byte[1024];
             int n;
+            int round = 0;
             while ((n = in.read(buffer)) > 0) {
                 boolean status = false;
+                LogUtils.log("---------S:" + round + "---------");
                 LogUtils.log("socket_" + this.getSocketid() + "， port:" + this.getSocket().getPort() + " read buffer running...");
                 LogUtils.log("buffer:" + LogUtils.getBytesString(buffer, n));
-                Qna3EHeader qna3EHeader = new Qna3EHeader(buffer);
 
+                Qna3EHeader qna3EHeader = new Qna3EHeader(buffer);
                 Qna3ERequestItem qna3ERequestItem = new Qna3ERequestItem(buffer);
                 Qna3EComCode.ComCodeEnum codeEnum = Qna3EComCode.ComCodeEnum.from(qna3EHeader.getCommand());
-
                 String address = getAddress(qna3ERequestItem.getAddress(), qna3ERequestItem.getSofCode());
-
-
                 if (codeEnum == Qna3EComCode.ComCodeEnum.WriteVar) {
+                    byte[] lenB = qna3ERequestItem.getDataLength();
+                    short lenShort = ByteUtils.byteArrayToShortL(lenB);
+                    byte[] writeData = new byte[lenShort * 2];
+                    System.arraycopy(buffer, 21, writeData, 0, lenShort * 2);
+
                     LogUtils.log("__Write data to address: " + address + ", Data Length=" + ByteUtils.byteArrayToShortL(qna3EHeader.getDataLen())
-                            + ", write data: " + LogUtils.getBytesString(qna3ERequestItem.getData()));
-                    write(address, qna3ERequestItem.getData());
+                            + ", write data: " + LogUtils.getBytesString(writeData) + ", dataLen:" + (2 * lenShort));
+
+                    write(address, writeData);
                     out.write(PLCConstents.Qna3E_WRITE_SUCCESS, 0, PLCConstents.Qna3E_WRITE_SUCCESS.length);
                     status = true;
                 } else if (codeEnum == Qna3EComCode.ComCodeEnum.ReadVar) {
@@ -84,6 +89,9 @@ public class Qna3EWorker extends BaseWorker {
                 if (!status) {
                     out.write(PLCConstents.Qna3E_WRITE_SUCCESS, 0, PLCConstents.Qna3E_WRITE_SUCCESS.length);
                 }
+
+                round++;
+                LogUtils.log("---------E:" + round + "---------");
             }
             LogUtils.log("handleClient finished.");
         } catch (IOException ioException) {
@@ -102,9 +110,9 @@ public class Qna3EWorker extends BaseWorker {
         StringBuilder stringBuilder = new StringBuilder();
 
         /**
-         * 0xA8 表示D 点
+         * 0xA8 represents Dxx
          */
-        if ((byte) 0xa8 == addrType) {
+        if ((byte) 0xA8 == addrType) {
             stringBuilder.append("D");
         }
         stringBuilder.append(addrV);

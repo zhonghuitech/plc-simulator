@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * S7协议
- * 见如下文档：
+ * Refs：
  * <a href="https://blog.csdn.net/Mr_Bobcp/article/details/106648781">西门子S7协议笔记</a>
  * <a href="https://blog.csdn.net/oliver223/article/details/118107094">西门子S7协议介绍</a>
  * <a href="https://www.jianshu.com/p/19798f2768e1">S7协议常量</a>
@@ -54,7 +54,9 @@ public class S7Worker extends BaseWorker {
             byte[] isoHeader = new byte[7];
 
             int n;
+            int round = 0;
             while ((n = in.read(buffer)) > 0) {
+                LogUtils.log("---------S:" + round + "---------");
                 boolean status = false;
                 int pduLen = n - 7;
                 LogUtils.log("socket_" + this.getSocketid() + "， port:" + this.getSocket().getPort() + " read buffer running..." + pduLen);
@@ -166,6 +168,9 @@ public class S7Worker extends BaseWorker {
                     LogUtils.log("返回兜底成功信息");
                     out.write(PLCConstents.S7_1200_SUCCESS, 0, PLCConstents.S7_1200_SUCCESS.length);
                 }
+
+                round++;
+                LogUtils.log("---------E:" + round + "---------");
             }
             LogUtils.log("handleClient finished.");
         } catch (IOException ioException) {
