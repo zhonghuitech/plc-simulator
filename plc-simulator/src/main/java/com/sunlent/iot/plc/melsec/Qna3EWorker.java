@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Ref：
  * <a href="https://blog.csdn.net/wy749929317/article/details/124144389">三菱PLC MC协议</a>
+ * <a href="https://zhuanlan.zhihu.com/p/546432657">三菱Q系列PLC（可编程控制器）：TCP MC协议</a>
  *
  * @author aborn (jiangguobao)
  * @date 2022/12/05 15:54
@@ -49,15 +50,19 @@ public class Qna3EWorker extends BaseWorker {
                 Qna3EHeader qna3EHeader = new Qna3EHeader(buffer);
                 Qna3ERequestItem qna3ERequestItem = new Qna3ERequestItem(buffer);
                 Qna3EComCode.ComCodeEnum codeEnum = Qna3EComCode.ComCodeEnum.from(qna3EHeader.getCommand());
-                String address = getAddress(qna3ERequestItem.getAddress(), qna3ERequestItem.getSofCode());
+                Qna3ERequestItem.TypeCodeEnum addressType = qna3ERequestItem.getTypeCodeEnum();
+                String address = getAddress(qna3ERequestItem.getAddress(), addressType);
+
+
                 if (codeEnum == Qna3EComCode.ComCodeEnum.WriteVar) {
                     byte[] lenB = qna3ERequestItem.getDataLength();
                     short lenShort = ByteUtils.byteArrayToShortL(lenB);
-                    byte[] writeData = new byte[lenShort * 2];
-                    System.arraycopy(buffer, 21, writeData, 0, lenShort * 2);
+                    short dataLen = (short) (addressType.isWord() ? lenShort * 2 : 2*lenShort);
+                    byte[] writeData = new byte[dataLen];
+                    System.arraycopy(buffer, 21, writeData, 0, dataLen);
 
                     LogUtils.log("__Write data to address: " + address + ", Data Length=" + ByteUtils.byteArrayToShortL(qna3EHeader.getDataLen())
-                            + ", write data: " + LogUtils.getBytesString(writeData) + ", dataLen:" + (2 * lenShort));
+                            + ", write data: " + LogUtils.getBytesString(writeData) + ", dataLen:" + dataLen);
 
                     write(address, writeData);
                     out.write(PLCConstents.Qna3E_WRITE_SUCCESS, 0, PLCConstents.Qna3E_WRITE_SUCCESS.length);
@@ -66,18 +71,19 @@ public class Qna3EWorker extends BaseWorker {
                     byte[] readV = read(address);
                     byte[] readLenB = qna3ERequestItem.getDataLength();
                     short readLenShort = ByteUtils.byteArrayToShortL(readLenB);
-                    byte[] resBuffer = new byte[(readLenShort * 2) + PLCConstents.Qna3E_WRITE_SUCCESS.length];
+                    short dataLen = (short) (addressType.isWord() ? readLenShort * 2 : 2*readLenShort);
+                    byte[] resBuffer = new byte[(dataLen) + PLCConstents.Qna3E_WRITE_SUCCESS.length];
 
                     LogUtils.log("__Read data from address: " + address + ", Data Length=" + ByteUtils.byteArrayToShortL(qna3EHeader.getDataLen())
-                            + ", read data value: " + LogUtils.getBytesString(readV) + ", read dataLen:" + (2 * readLenShort));
+                            + ", read data value: " + LogUtils.getBytesString(readV) + ", read dataLen:" + dataLen);
 
                     System.arraycopy(PLCConstents.Qna3E_WRITE_SUCCESS, 0, resBuffer, 0, PLCConstents.Qna3E_WRITE_SUCCESS.length);
                     System.arraycopy(readV, 0, resBuffer, PLCConstents.Qna3E_WRITE_SUCCESS.length, readV.length);
                     resBuffer[0] = (byte) 0xD0;
 
                     // 计算数据部分长度
-                    short dataLen = (short) (resBuffer.length - 9);
-                    byte[] dataLenArr = ByteUtils.shorToByteArrayL(dataLen);
+                    short resDataLen = (short) (resBuffer.length - 9);
+                    byte[] dataLenArr = ByteUtils.shorToByteArrayL(resDataLen);
                     resBuffer[7] = dataLenArr[0];
                     resBuffer[8] = dataLenArr[1];
 
@@ -101,7 +107,7 @@ public class Qna3EWorker extends BaseWorker {
         }
     }
 
-    private String getAddress(byte[] address, byte addrType) {
+    private String getAddress(byte[] address, Qna3ERequestItem.TypeCodeEnum addrType) {
         // TO Big-Ed
         byte[] addr = new byte[2];
         addr[0] = address[1];
@@ -112,8 +118,8 @@ public class Qna3EWorker extends BaseWorker {
         /**
          * 0xA8 represents Dxx
          */
-        if ((byte) 0xA8 == addrType) {
-            stringBuilder.append("D");
+        if (addrType != null) {
+            stringBuilder.append(addrType.name());
         }
         stringBuilder.append(addrV);
         return stringBuilder.toString();
