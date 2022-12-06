@@ -9,5 +9,8 @@ Run `MainSimulator`  (in plc-simulator-demo pkg.)
 Siemens S7 protocol.
 
 ### Melsec
+Melsec Qna-3E Binary
+
+### Modbus
 WIP
 
