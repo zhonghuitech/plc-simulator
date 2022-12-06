@@ -1,6 +1,7 @@
 package com.sunlent.iot.plc.melsec;
 
 import com.sunlent.iot.plc.base.BaseWorker;
+import com.sunlent.iot.plc.base.PLCConstents;
 import com.sunlent.iot.plc.util.ByteUtils;
 import com.sunlent.iot.plc.util.LogUtils;
 
@@ -37,35 +38,48 @@ public class Qna3EWorker extends BaseWorker {
             OutputStream out = socket.getOutputStream();
 
             byte[] buffer = new byte[1024];
-            byte[] s7Pdu = new byte[1024];
-            byte[] isoHeader = new byte[7];
-
             int n;
             while ((n = in.read(buffer)) > 0) {
                 boolean status = false;
-                int pduLen = n - 7;
                 LogUtils.log("socket_" + this.getSocketid() + "， port:" + this.getSocket().getPort() + " read buffer running...");
                 LogUtils.log("buffer:" + LogUtils.getBytesString(buffer, n));
                 Qna3EHeader qna3EHeader = new Qna3EHeader(buffer);
-
 
                 Qna3ERequestItem qna3ERequestItem = new Qna3ERequestItem(buffer);
                 Qna3EComCode.ComCodeEnum codeEnum = Qna3EComCode.ComCodeEnum.from(qna3EHeader.getCommand());
 
                 String address = getAddress(qna3ERequestItem.getAddress(), qna3ERequestItem.getSofCode());
-                LogUtils.log("Data Length=" + ByteUtils.byteArrayToShortS(qna3EHeader.getDataLen())
-                        + ", Write data to address: " + address + ", write data: " + LogUtils.getBytesString(qna3ERequestItem.getData()));
+
 
                 if (codeEnum == Qna3EComCode.ComCodeEnum.WriteVar) {
+                    LogUtils.log("__Write data to address: " + address + ", Data Length=" + ByteUtils.byteArrayToShortL(qna3EHeader.getDataLen())
+                            + ", write data: " + LogUtils.getBytesString(qna3ERequestItem.getData()));
                     write(address, qna3ERequestItem.getData());
+                    out.write(PLCConstents.Qna3E_WRITE_SUCCESS, 0, PLCConstents.Qna3E_WRITE_SUCCESS.length);
+                    status = true;
                 } else if (codeEnum == Qna3EComCode.ComCodeEnum.ReadVar) {
                     byte[] readV = read(address);
+                    byte[] resBuffer = new byte[readV.length + PLCConstents.Qna3E_WRITE_SUCCESS.length];
+                    LogUtils.log("__Read data from address: " + address + ", Data Length=" + ByteUtils.byteArrayToShortL(qna3EHeader.getDataLen())
+                            + "read data value: " + LogUtils.getBytesString(readV));
+
+                    System.arraycopy(PLCConstents.Qna3E_WRITE_SUCCESS, 0, resBuffer, 0, PLCConstents.Qna3E_WRITE_SUCCESS.length);
+                    System.arraycopy(readV, 0, resBuffer, PLCConstents.Qna3E_WRITE_SUCCESS.length, readV.length);
+                    resBuffer[0] = (byte) 0xD0;
+
+                    // 计算数据部分长度
+                    short dataLen = (short) (resBuffer.length - 9);
+                    byte[] dataLenArr = ByteUtils.shorToByteArrayL(dataLen);
+                    resBuffer[7] = dataLenArr[0];
+                    resBuffer[8] = dataLenArr[1];
+
+                    out.write(resBuffer, 0, resBuffer.length);
+                    status = true;
                 }
 
-                byte[] resBuffer = new byte[n];
-                System.arraycopy(buffer, 0, resBuffer, 0, n);
-                resBuffer[0] = (byte) 0xd0;
-                out.write(resBuffer, 0, resBuffer.length);
+                if (!status) {
+                    out.write(PLCConstents.Qna3E_WRITE_SUCCESS, 0, PLCConstents.Qna3E_WRITE_SUCCESS.length);
+                }
             }
             LogUtils.log("handleClient finished.");
         } catch (IOException ioException) {

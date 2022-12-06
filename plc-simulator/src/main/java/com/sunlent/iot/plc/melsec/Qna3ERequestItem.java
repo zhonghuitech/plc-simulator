@@ -33,7 +33,7 @@ public class Qna3ERequestItem {
         this.sofCode = qna[offset + 3];
         this.dataLength[0] = qna[offset + 4];
         this.dataLength[1] = qna[offset + 5];
-        short len = ByteUtils.byteArrayToShortS(this.dataLength);
+        short len = ByteUtils.byteArrayToShortL(this.dataLength);
         this.data = new byte[len];
         System.arraycopy(qna, offset + 6, this.data, 0, len);
     }

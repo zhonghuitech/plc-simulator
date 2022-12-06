@@ -30,6 +30,12 @@ public class ByteUtils {
         };
     }
 
+    /**
+     * Big endian
+     *
+     * @param a
+     * @return
+     */
     public static byte[] shortToByteArray(short a) {
         return new byte[]{
                 (byte) ((a >> 8) & 0xFF),
@@ -51,15 +57,29 @@ public class ByteUtils {
     }
 
     /**
-     * Small-Edien
+     * Little endian
+     *
      * @param address
      * @return
      */
-    public static short byteArrayToShortS(byte[] address) {
+    public static short byteArrayToShortL(byte[] address) {
         byte[] addr = new byte[2];
         addr[0] = address[1];
         addr[1] = address[0];
         return ByteUtils.byteArrayToShort(addr);
+    }
+
+    /**
+     * Little endian
+     * @param sV
+     * @return
+     */
+    public static byte[] shorToByteArrayL(short sV) {
+        byte[] bigEBytes = shortToByteArray(sV);
+        byte[] res = new byte[2];
+        res[0] = bigEBytes[1];
+        res[1] = bigEBytes[0];
+        return res;
     }
 
     public static void main(String[] args) {
