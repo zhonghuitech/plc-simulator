@@ -22,24 +22,21 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Qna3EWorker extends BaseWorker {
     public static final String AREA = "QNA3E";
-
-    @Override
-    public void run() {
-        handleClient();
-    }
-
     @Override
     protected String getArea() {
         return AREA;
     }
 
-    Qna3EWorker(Socket socket, int id) throws IOException {
-        LogUtils.log("Worker_" + id + ", running...");
-        this.socket = socket;
-        this.socketid = id;
+    public Qna3EWorker(Socket socket) {
+        super(socket);
     }
 
-    private void handleClient() {
+    public Qna3EWorker(Socket socket, int id) {
+        super(socket, id);
+    }
+
+    @Override
+    protected void handleClient() {
         try {
             InputStream in = socket.getInputStream();
             OutputStream out = socket.getOutputStream();
@@ -132,17 +129,12 @@ public class Qna3EWorker extends BaseWorker {
     }
 
     @Override
-    protected void write(String address, byte[] value) {
-        super.write(address, value);
-    }
-
-    @Override
     protected byte[] read(String address) {
         // 124513
         byte[] defaultValue = new byte[]{0x61, (byte) 0xe6, 0x01, 0x00};
         byte[] dataV = super.read(address);
         if (dataV == null) {
-            LogUtils.log("位置：" + address + ", 值不存在!，返回默认值！");
+            LogUtils.log("Address：" + address + ", hasn't value! Now return default value！");
             // TODO 不存在时根据类型，可以返回一个随机的值
         }
         return dataV == null ? defaultValue : dataV;

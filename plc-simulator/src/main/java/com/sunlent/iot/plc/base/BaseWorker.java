@@ -11,9 +11,27 @@ public class BaseWorker extends Thread {
     protected Socket socket;
 
     /**
-     * Socket 连接编号
+     * Socket No.
      */
     protected int socketid;
+
+    @Override
+    public void run() {
+        handleClient();
+    }
+
+    protected void handleClient() {
+
+    }
+
+    public BaseWorker(Socket socket) {
+        this(socket, 0);
+    }
+
+    public BaseWorker(Socket socket, int id) {
+        this.socket = socket;
+        this.socketid = id;
+    }
 
     protected void write(String address, byte[] value) {
         // 由继承子类实现

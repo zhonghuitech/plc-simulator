@@ -17,7 +17,7 @@ public class S7Server extends BaseServer {
 
     public S7Server() throws IOException {
         /**
-         * 默认为 102 端口， TPKT协议
+         * Default port: 102， TPKT protocal.
          */
         this(102);
     }

@@ -26,8 +26,12 @@ public class S7Worker extends BaseWorker {
 
     public static final String AREA = "S7WORKER";
 
-    S7Worker(Socket socket) throws IOException {
-        this.socket = socket;
+    public S7Worker(Socket socket) {
+        super(socket);
+    }
+
+    public S7Worker(Socket socket, int id) {
+        super(socket, id);
     }
 
     @Override
@@ -35,22 +39,13 @@ public class S7Worker extends BaseWorker {
         return AREA;
     }
 
-    S7Worker(Socket socket, int id) throws IOException {
-        this.socket = socket;
-        this.socketid = id;
-    }
-
-    @Override
-    public void run() {
-        handleClient();
-    }
-
     /**
      * 处理客户端流
      *
      * @throws IOException
      */
-    private void handleClient() {
+    @Override
+    protected void handleClient() {
         try {
             InputStream in = socket.getInputStream();
             OutputStream out = socket.getOutputStream();
@@ -184,11 +179,6 @@ public class S7Worker extends BaseWorker {
         } catch (Exception e) {
             LogUtils.log("handleClient exception." + e.getMessage());
         }
-    }
-
-    @Override
-    protected void write(String address, byte[] value) {
-        super.write(address, value);
     }
 
     @Override

@@ -16,7 +16,7 @@ public class Qna3EServer extends BaseServer {
     private static final int MAX_CONNECT_COUNT = 1024;
 
     public Qna3EServer() throws IOException {
-        // 默认端口号
+        // Default port
         this(6000);
     }
 
