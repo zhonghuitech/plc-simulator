@@ -99,7 +99,7 @@ public class Qna3EWorker extends BaseWorker {
                 round++;
                 LogUtils.log("---------E:" + round + "---------");
             }
-            LogUtils.log("handleClient finished.");
+            LogUtils.log("handleClient finished." + this.socketid + ", " + this.socket);
         } catch (IOException ioException) {
             LogUtils.log("handleClient io exception." + ioException.getMessage());
         } catch (Exception e) {
