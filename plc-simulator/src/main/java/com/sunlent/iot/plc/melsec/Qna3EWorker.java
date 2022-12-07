@@ -134,14 +134,16 @@ public class Qna3EWorker extends BaseWorker {
     protected byte[] read(String address) {
         // 3、4 为数据长度位
         byte[] dataValue = new byte[]{0x00, 0x00, 0x00, 0x0d};
+        // 124513
+        byte[] defaultValue = new byte[]{0x61, (byte) 0xe6, 0x01, 0x00};
 
         if (MEMORY.containsKey(address)) {
-            dataValue = MEMORY.get(address);
+            return MEMORY.get(address);
         } else {
-            LogUtils.log("位置：" + address + ", 值不存在!");
+            LogUtils.log("位置：" + address + ", 值不存在!，返回默认值！");
             // TODO 不存在时根据类型，可以返回一个随机的值
         }
-        return dataValue;
+        return defaultValue;
     }
 
 }
