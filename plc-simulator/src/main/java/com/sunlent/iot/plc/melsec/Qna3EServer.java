@@ -33,12 +33,13 @@ public class Qna3EServer extends BaseServer {
                 LogUtils.log(this.name + " waiting for connect，listen port：" + this.port);
                 Socket client = this.socket.accept();
                 this.countPlusOne();
-                LogUtils.log("new access : InetAddress = "
+                LogUtils.log(this.name + "==> new access : InetAddress = "
                         + this.socket + "， client:" + client);
                 LogUtils.log("timeout：" + socket.getSoTimeout() + ", current:" + count);
                 if (this.getCount() < MAX_CONNECT_COUNT) {
-                    new Qna3EWorker(client, count).run();
+                    new Qna3EWorker(client, count).start();
                 }
+                LogUtils.log("--- finished access ---");
             }
         } catch (IOException e) {
             LogUtils.log("exception" + e.getMessage());

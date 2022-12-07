@@ -31,14 +31,17 @@ public class S7Server extends BaseServer {
     @Override
     public void run() {
         try {
-            LogUtils.log(this.name + " waiting for connect，listen port：" + this.port);
-            Socket client = this.socket.accept();
-            this.countPlusOne();
-            LogUtils.log("new access : InetAddress = "
-                    + this.socket);
-            LogUtils.log("timeout：" + socket.getSoTimeout() + ", current:" + count);
-            if (this.getCount() < MAX_CONNECT_COUNT) {
-                new S7Worker(client, count).run();
+            while (true) {
+                LogUtils.log(this.name + " waiting for connect，listen port：" + this.port);
+                Socket client = this.socket.accept();
+                this.countPlusOne();
+                LogUtils.log("new access : InetAddress = "
+                        + this.socket);
+                LogUtils.log("timeout：" + socket.getSoTimeout() + ", current:" + count);
+                if (this.getCount() < MAX_CONNECT_COUNT) {
+                    new S7Worker(client, count).start();
+                }
+                LogUtils.log("--- finished access ---" + this.name);
             }
         } catch (IOException e) {
             LogUtils.log("exception" + e.getMessage());
