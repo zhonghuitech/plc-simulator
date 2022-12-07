@@ -2,6 +2,7 @@ package com.sunlent.iot.plc.melsec;
 
 import com.sunlent.iot.plc.base.BaseWorker;
 import com.sunlent.iot.plc.base.PLCConstents;
+import com.sunlent.iot.plc.base.SimuData;
 import com.sunlent.iot.plc.util.ByteUtils;
 import com.sunlent.iot.plc.util.LogUtils;
 
@@ -20,11 +21,16 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2022/12/05 15:54
  */
 public class Qna3EWorker extends BaseWorker {
-    ConcurrentHashMap<String, byte[]> MEMORY = new ConcurrentHashMap<>();
+    public static final String AREA = "QNA3E";
 
     @Override
     public void run() {
         handleClient();
+    }
+
+    @Override
+    protected String getArea() {
+        return AREA;
     }
 
     Qna3EWorker(Socket socket, int id) throws IOException {
@@ -57,7 +63,7 @@ public class Qna3EWorker extends BaseWorker {
                 if (codeEnum == Qna3EComCode.ComCodeEnum.WriteVar) {
                     byte[] lenB = qna3ERequestItem.getDataLength();
                     short lenShort = ByteUtils.byteArrayToShortL(lenB);
-                    short dataLen = (short) (addressType.isWord() ? lenShort * 2 : 2*lenShort);
+                    short dataLen = (short) (addressType.isWord() ? lenShort * 2 : 2 * lenShort);
                     byte[] writeData = new byte[dataLen];
                     System.arraycopy(buffer, 21, writeData, 0, dataLen);
 
@@ -71,7 +77,7 @@ public class Qna3EWorker extends BaseWorker {
                     byte[] readV = read(address);
                     byte[] readLenB = qna3ERequestItem.getDataLength();
                     short readLenShort = ByteUtils.byteArrayToShortL(readLenB);
-                    short dataLen = (short) (addressType.isWord() ? readLenShort * 2 : 2*readLenShort);
+                    short dataLen = (short) (addressType.isWord() ? readLenShort * 2 : 2 * readLenShort);
                     byte[] resBuffer = new byte[(dataLen) + PLCConstents.Qna3E_WRITE_SUCCESS.length];
 
                     LogUtils.log("__Read data from address: " + address + ", Data Length=" + ByteUtils.byteArrayToShortL(qna3EHeader.getDataLen())
@@ -127,23 +133,19 @@ public class Qna3EWorker extends BaseWorker {
 
     @Override
     protected void write(String address, byte[] value) {
-        MEMORY.put(address, value);
+        super.write(address, value);
     }
 
     @Override
     protected byte[] read(String address) {
-        // 3、4 为数据长度位
-        byte[] dataValue = new byte[]{0x00, 0x00, 0x00, 0x0d};
         // 124513
         byte[] defaultValue = new byte[]{0x61, (byte) 0xe6, 0x01, 0x00};
-
-        if (MEMORY.containsKey(address)) {
-            return MEMORY.get(address);
-        } else {
+        byte[] dataV = super.read(address);
+        if (dataV == null) {
             LogUtils.log("位置：" + address + ", 值不存在!，返回默认值！");
             // TODO 不存在时根据类型，可以返回一个随机的值
         }
-        return defaultValue;
+        return dataV == null ? defaultValue : dataV;
     }
 
 }

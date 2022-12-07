@@ -17,10 +17,15 @@ public class BaseWorker extends Thread {
 
     protected void write(String address, byte[] value) {
         // 由继承子类实现
+        SimuData.put(getArea(), address, value);
     };
 
+    protected String getArea() {
+        return "BASEWORKER";
+    }
+
     protected byte[] read(String address) {
-        return null;
+        return SimuData.get(getArea(), address);
     }
 
     public Socket getSocket() {

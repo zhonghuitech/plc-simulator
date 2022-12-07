@@ -23,10 +23,16 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2022/12/01 15:17
  */
 public class S7Worker extends BaseWorker {
-    ConcurrentHashMap<String, byte[]> MEMORY = new ConcurrentHashMap<>();
+
+    public static final String AREA = "S7WORKER";
 
     S7Worker(Socket socket) throws IOException {
         this.socket = socket;
+    }
+
+    @Override
+    protected String getArea() {
+        return AREA;
     }
 
     S7Worker(Socket socket, int id) throws IOException {
@@ -182,21 +188,19 @@ public class S7Worker extends BaseWorker {
 
     @Override
     protected void write(String address, byte[] value) {
-        MEMORY.put(address, value);
+        super.write(address, value);
     }
 
     @Override
     protected byte[] read(String address) {
         // 3、4 为数据长度位
-        byte[] dataValue = new byte[]{0x00, 0x00, 0x00, 0x0d};
+        byte[] defaultV = new byte[]{0x00, 0x00, 0x00, 0x0d};
 
-        if (MEMORY.containsKey(address)) {
-            dataValue = MEMORY.get(address);
-        } else {
+        byte[] dataV = super.read(address);
+        if (dataV == null) {
             LogUtils.log("位置：" + address + ", 值不存在!");
-            // TODO 不存在时根据类型，可以返回一个随机的值
         }
-        return dataValue;
+        return dataV == null ? defaultV : dataV;
     }
 
     String getMarkAdress(byte[] addressInput) {
