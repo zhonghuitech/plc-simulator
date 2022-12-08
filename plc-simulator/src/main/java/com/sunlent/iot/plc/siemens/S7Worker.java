@@ -173,7 +173,7 @@ public class S7Worker extends BaseWorker {
                 round++;
                 LogUtils.log("---------E:" + round + "---------");
             }
-            LogUtils.log("handleClient finished.");
+            LogUtils.log(this.getArea() + " handleClient finished." + this.socketid + ", " + this.socket);
         } catch (IOException ioException) {
             LogUtils.log("handleClient io exception." + ioException.getMessage());
         } catch (Exception e) {
