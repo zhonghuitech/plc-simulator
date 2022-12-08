@@ -1,6 +1,7 @@
 package com.sunlent.iot.plc.demo;
 
 import com.sunlent.iot.plc.melsec.Qna3EServer;
+import com.sunlent.iot.plc.modbus.ModbusServer;
 import com.sunlent.iot.plc.siemens.S7Server;
 import com.sunlent.iot.plc.util.LogUtils;
 
@@ -17,6 +18,7 @@ public class MainSimulator {
         try {
             new S7Server().start();
             new Qna3EServer().start();
+            new ModbusServer().start();
         } catch (IOException e) {
             LogUtils.log("main start exception.!");
         }

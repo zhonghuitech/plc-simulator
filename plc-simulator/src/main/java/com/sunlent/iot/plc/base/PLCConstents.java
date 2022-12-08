@@ -5,6 +5,8 @@ package com.sunlent.iot.plc.base;
  * @date 2022/11/30 17:43
  */
 public class PLCConstents {
+
+    public static final int MAX_CONNECT_COUNT = 1024;
     public static final byte[] S7_1200_INIT = new byte[]
             {
                     0x03, 0x00, 0x00, 0x16, 0x11, (byte) 0xE0, 0x00, 0x00, 0x00, 0x01, 0x00, (byte) 0xC0, 0x01,

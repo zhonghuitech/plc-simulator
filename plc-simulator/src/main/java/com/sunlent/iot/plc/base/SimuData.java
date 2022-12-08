@@ -1,5 +1,6 @@
 package com.sunlent.iot.plc.base;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -8,17 +9,32 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SimuData {
 
+    private static final String SPLIT = ":";
     public static final ConcurrentHashMap<String, byte[]> MEMORY = new ConcurrentHashMap<>();
 
-    public static void put(String area,  String address, byte[] value) {
-        MEMORY.put(area + address, value);
+    public static void put(String area, String address, byte[] value) {
+        MEMORY.put(getKey(area, address), value);
     }
+
     public static boolean containsKey(String area, String address) {
-        return MEMORY.containsKey(area + address);
+        return MEMORY.containsKey(getKey(area, address));
     }
 
     public static byte[] get(String area, String address) {
-        return MEMORY.getOrDefault(area + address, null);
+        return MEMORY.getOrDefault(getKey(area, address), null);
+    }
+
+    private static String getKey(String area, String address) {
+        return area + SPLIT + address;
+    }
+
+    public static void clearAreaData(String area) {
+        for (Map.Entry<String, byte[]> entry : MEMORY.entrySet()) {
+            String key = entry.getKey();
+            if (key.startsWith(area + SPLIT)) {
+                MEMORY.remove(key);
+            }
+        }
     }
 
 }
