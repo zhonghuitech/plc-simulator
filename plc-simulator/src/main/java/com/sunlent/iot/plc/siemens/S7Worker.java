@@ -85,7 +85,7 @@ public class S7Worker extends BaseWorker {
                     byte memoryArea = s7Pdu[20];
                     S7DataItem s7DataItem = new S7DataItem(s7PduV);
                     if ((byte) s7RequestItem.getArea() == memoryArea) {
-                        String address = getMarkAdress(s7RequestItem.getAddress());
+                        String address = getMarkAddress(s7RequestItem.getAddress());
                         // 剩余长度byte全为值， pdu header 10, pdu parameters 2, requestItem 12, data header 4
                         int left = pduLen - 28;
                         LogUtils.log("__WW__写数据到地址：" + address + ", 类型：" + s7RequestItem.getVarType() + ", 数据byte长度：" + left + ", dataVType:" + s7DataItem.getVarType());
@@ -111,7 +111,7 @@ public class S7Worker extends BaseWorker {
                         LogUtils.log("写其他位置");
                     }
                 } else if (funCode.getCodeEnum() == S7FunCode.FunCodeEnum.ReadVar) {
-                    String address = getMarkAdress(s7RequestItem.getAddress());
+                    String address = getMarkAddress(s7RequestItem.getAddress());
                     short len = ByteUtils.byteArrayToShort(s7RequestItem.count);
                     LogUtils.log("__RR__从如下位置读数据：" + address + ", 类型：" + s7RequestItem.getVarType() + ", 长度：" + len);
                     byte[] dataValueTemp = read(address);
@@ -193,7 +193,7 @@ public class S7Worker extends BaseWorker {
         return dataV == null ? defaultV : dataV;
     }
 
-    String getMarkAdress(byte[] addressInput) {
+    String getMarkAddress(byte[] addressInput) {
         byte[] address = new byte[4];
         System.arraycopy(addressInput, 0, address, 1, 3);
         String addressV = "M" + byteArrayToIntM(address);
