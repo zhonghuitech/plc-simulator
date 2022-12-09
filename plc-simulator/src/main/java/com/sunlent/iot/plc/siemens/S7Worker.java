@@ -26,10 +26,6 @@ public class S7Worker extends BaseWorker {
 
     public static final String AREA = "S7WORKER";
 
-    public S7Worker(Socket socket) {
-        super(socket);
-    }
-
     public S7Worker(Socket socket, int id) {
         super(socket, id);
     }

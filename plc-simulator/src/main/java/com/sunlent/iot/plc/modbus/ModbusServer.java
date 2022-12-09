@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 /**
- * https://juejin.cn/post/6988803436309381127
+ * <a href="https://juejin.cn/post/6988803436309381127">一文看懂Modbus协议</a>
  *
  * @author aborn (jiangguobao)
  * @date 2022/12/06 11:50
@@ -26,7 +26,6 @@ public class ModbusServer extends BaseServer {
 
     @Override
     protected BaseWorker getWorker(Socket client) {
-        // 子类实现
         return new ModbusWorker(client, getCount());
     }
 }

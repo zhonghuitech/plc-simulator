@@ -1,5 +1,5 @@
 # plc-simulator
-PLC simulators program (Java), which supports lots of main plcs.
+The Java implementation of PLC simulators, which supports lots of mainstream PLCs.
 
 ## Usage
 Run `MainSimulator`  (in plc-simulator-demo pkg.)
@@ -15,5 +15,5 @@ Melsec Qna-3E Binary
 Modbus-RTU
 
 ### Omron
-Fins-TCP (WIP)
+Fins-TCP 
 

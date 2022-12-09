@@ -2,7 +2,6 @@ package com.sunlent.iot.plc.omron;
 
 import com.sunlent.iot.plc.base.BaseServer;
 import com.sunlent.iot.plc.base.BaseWorker;
-import com.sunlent.iot.plc.modbus.ModbusWorker;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -20,7 +19,6 @@ public class OmronServer extends BaseServer {
 
     @Override
     protected BaseWorker getWorker(Socket client) {
-        // 子类实现
         return new OmronWorker(client, getCount());
     }
 }
