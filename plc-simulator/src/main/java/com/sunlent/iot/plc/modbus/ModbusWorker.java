@@ -11,6 +11,7 @@ import java.net.Socket;
 
 /**
  * <a href="https://mp.weixin.qq.com/s/jY_JTYViQoHPXzquinhTzg">CRC校验原来这么简单</a>
+ *
  * @author aborn (jiangguobao)
  * @date 2022/12/08 19:16
  */
@@ -80,7 +81,8 @@ public class ModbusWorker extends BaseWorker {
                         }
                         byte[] resBuf = new byte[8];
                         System.arraycopy(buffer, 0, resBuf, 0, 6);
-                        // todo CRC byte[6-7]
+                        byte[] crcV = utils.CRC16Modbus.calCRC(resBuf, 0, resBuf.length - 2);
+                        System.arraycopy(crcV, 0, resBuf, resBuf.length -2, crcV.length);
                         out.write(resBuf, 0, resBuf.length);
                     } else if (funCode == (byte) 0x03) {
                         // 读多个寄存器
@@ -109,7 +111,8 @@ public class ModbusWorker extends BaseWorker {
                         resBuf[2] = dataLen[1];
                         // write data to resBuf
                         System.arraycopy(data, 0, resBuf, 3, len);
-                        // todo CRC byte[last 2 bytes]
+                        byte[] crcV = utils.CRC16Modbus.calCRC(resBuf, 0, resBuf.length - 2);
+                        System.arraycopy(crcV, 0, resBuf, resBuf.length -2, crcV.length);
                         out.write(resBuf, 0, resBuf.length);
                     }
                 }
