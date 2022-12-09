@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 /**
+ * <a href="https://mp.weixin.qq.com/s/jY_JTYViQoHPXzquinhTzg">CRC校验原来这么简单</a>
  * @author aborn (jiangguobao)
  * @date 2022/12/08 19:16
  */
@@ -106,7 +107,8 @@ public class ModbusWorker extends BaseWorker {
                         System.arraycopy(buffer, 0, resBuf, 0, 2);
                         // the length of return data (unit: byte)
                         resBuf[2] = dataLen[1];
-                        System.arraycopy(dataLen, 0, resBuf, 3, len);
+                        // write data to resBuf
+                        System.arraycopy(data, 0, resBuf, 3, len);
                         // todo CRC byte[last 2 bytes]
                         out.write(resBuf, 0, resBuf.length);
                     }
