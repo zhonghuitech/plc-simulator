@@ -13,6 +13,7 @@ import java.net.Socket;
 /**
  * <a href="https://blog.csdn.net/xiketangAndy/article/details/120267036">FinsTCP协议报文详细分析</a>
  * <a href="https://blog.csdn.net/weixin_37700863/article/details/120536223">欧姆龙PLC的FinsTCP协议</a>
+ *
  * @author aborn (jiangguobao)
  * @date 2022/12/09 15:55
  */
@@ -40,7 +41,7 @@ public class OmronWorker extends BaseWorker {
             int n;
             int round = 0;
             while ((n = in.read(buffer)) > 0) {
-                LogUtils.log("---------S:" + round + "---------");
+                LogUtils.log("---------S:" + round + "---------" + getArea() + "---------");
                 OmronBaseReq omronBaseReq = new OmronBaseReq(buffer);
                 OmronComCode.ComCodeEnum codeEnum = OmronComCode.ComCodeEnum.from(omronBaseReq.getCommand());
                 LogUtils.debug(" income:" + LogUtils.getBytesString(buffer, n) + ", command:" + codeEnum.name());
@@ -128,7 +129,7 @@ public class OmronWorker extends BaseWorker {
                         out.write(resBuf, 0, resBuf.length);
                     }
                 }
-                LogUtils.log("---------E:" + round + "---------");
+                LogUtils.log("---------E:" + round + "---------" + getArea() + "---------");
                 round++;
             }
         } catch (IOException ioException) {

@@ -53,7 +53,7 @@ public class S7Worker extends BaseWorker {
             int n;
             int round = 0;
             while ((n = in.read(buffer)) > 0) {
-                LogUtils.log("---------S:" + round + "---------");
+                LogUtils.log("---------S:" + round + "---------" + getArea() + "---------");
                 boolean status = false;
                 int pduLen = n - 7;
                 LogUtils.log("socket_" + this.getSocketid() + "， port:" + this.getSocket().getPort() + " read buffer running..." + pduLen);
@@ -166,7 +166,7 @@ public class S7Worker extends BaseWorker {
                     out.write(PLCConstents.S7_1200_SUCCESS, 0, PLCConstents.S7_1200_SUCCESS.length);
                 }
 
-                LogUtils.log("---------E:" + round + "---------");
+                LogUtils.log("---------E:" + round + "---------" + getArea() + "---------");
                 round++;
             }
             LogUtils.log(this.getArea() + " handleClient finished." + this.socketid + ", " + this.socket);

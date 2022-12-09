@@ -42,7 +42,7 @@ public class ModbusWorker extends BaseWorker {
             int n;
             int round = 0;
             while ((n = in.read(buffer)) > 0) {
-                LogUtils.log("---------S:" + round + "---------");
+                LogUtils.log("---------S:" + round + "---------" + getArea() + "---------");
 
                 // 设备编号
                 byte[] deviceId = new byte[]{buffer[0]};
@@ -85,7 +85,7 @@ public class ModbusWorker extends BaseWorker {
                         byte[] resBuf = new byte[8];
                         System.arraycopy(buffer, 0, resBuf, 0, 6);
                         byte[] crcV = utils.CRC16Modbus.calCRC(resBuf, 0, resBuf.length - 2);
-                        System.arraycopy(crcV, 0, resBuf, resBuf.length -2, crcV.length);
+                        System.arraycopy(crcV, 0, resBuf, resBuf.length - 2, crcV.length);
                         LogUtils.debug(LogUtils.getBytesString(resBuf));
                         out.write(resBuf, 0, resBuf.length);
                     } else if (funCode == (byte) 0x03) {
@@ -118,13 +118,13 @@ public class ModbusWorker extends BaseWorker {
                         // write data to resBuf
                         System.arraycopy(data, 0, resBuf, 3, len);
                         byte[] crcV = utils.CRC16Modbus.calCRC(resBuf, 0, resBuf.length - 2);
-                        System.arraycopy(crcV, 0, resBuf, resBuf.length -2, crcV.length);
+                        System.arraycopy(crcV, 0, resBuf, resBuf.length - 2, crcV.length);
                         LogUtils.debug(LogUtils.getBytesString(resBuf));
                         out.write(resBuf, 0, resBuf.length);
                     }
                 }
 
-                LogUtils.log("---------E:" + round + "---------");
+                LogUtils.log("---------E:" + round + "---------" + getArea() + "---------");
                 round++;
             }
         } catch (IOException ioException) {

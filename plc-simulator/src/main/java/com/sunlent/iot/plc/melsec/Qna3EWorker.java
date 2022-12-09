@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Qna3EWorker extends BaseWorker {
     public static final String AREA = "QNA3E";
+
     @Override
     protected String getArea() {
         return AREA;
@@ -46,7 +47,7 @@ public class Qna3EWorker extends BaseWorker {
             int round = 0;
             while ((n = in.read(buffer)) > 0) {
                 boolean status = false;
-                LogUtils.log("---------S:" + round + "---------");
+                LogUtils.log("---------S:" + round + "---------" + getArea() + "---------");
                 LogUtils.log("socket_" + this.getSocketid() + "， port:" + this.getSocket().getPort() + " read buffer running...");
                 LogUtils.log("buffer:" + LogUtils.getBytesString(buffer, n));
 
@@ -99,7 +100,7 @@ public class Qna3EWorker extends BaseWorker {
                     out.write(PLCConstents.Qna3E_WRITE_SUCCESS, 0, PLCConstents.Qna3E_WRITE_SUCCESS.length);
                 }
 
-                LogUtils.log("---------E:" + round + "---------");
+                LogUtils.log("---------E:" + round + "---------" + getArea() + "---------");
                 round++;
             }
             LogUtils.log(this.getArea() + " handleClient finished." + this.socketid + ", " + this.socket);
