@@ -15,7 +15,9 @@ public class LogUtils {
         System.out.println(simpleDateFormat.format(new Date()) + " " + msg);
     }
 
-
+    public static void debug(String msg) {
+        log(msg);
+    }
 
     public static String getBytesString(byte[] bytes, int len) {
         HexFormat hex = HexFormat.of();

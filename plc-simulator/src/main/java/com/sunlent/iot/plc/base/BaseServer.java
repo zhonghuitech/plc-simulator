@@ -15,7 +15,7 @@ public class BaseServer extends Thread {
 
     protected BaseServer() throws IOException {}
 
-    protected BaseServer(int prot) throws IOException {
+    protected BaseServer(int port) throws IOException {
         this.socket = new ServerSocket(port);
         this.port = port;
     }
@@ -41,7 +41,7 @@ public class BaseServer extends Thread {
     public void run() {
         try {
             while (true) {
-                LogUtils.log(this.name + " waiting for connect，listen port：" + this.port);
+                LogUtils.log(this.name + " waiting for connect，listen port：" + this.getPort());
                 Socket client = this.socket.accept();
                 this.countPlusOne();
                 LogUtils.log("new access : InetAddress = "
@@ -60,5 +60,9 @@ public class BaseServer extends Thread {
     protected BaseWorker getWorker(Socket client) {
         // 子类实现
         return null;
+    }
+
+    public int getPort() {
+        return port;
     }
 }

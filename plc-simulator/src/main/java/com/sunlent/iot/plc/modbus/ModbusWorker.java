@@ -55,6 +55,7 @@ public class ModbusWorker extends BaseWorker {
                         byte[] address = new byte[2];
                         address[0] = buffer[2];
                         address[1] = buffer[3];
+                        LogUtils.debug("__write single-value, start address:" + LogUtils.getBytesString(address));
                         byte[] data = new byte[2];
                         data[0] = buffer[4];
                         data[1] = buffer[5];
@@ -62,7 +63,7 @@ public class ModbusWorker extends BaseWorker {
                         write(ByteUtils.bytesToString(deviceId, address), data);
                         out.write(buffer, 0, n);
                     } else if (funCode == (byte) 0x10) {
-                        // 写多个保持寄存器
+                        // write multiple-valued
                         byte[] address = new byte[2];
                         address[0] = buffer[2];
                         address[1] = buffer[3];
@@ -70,6 +71,7 @@ public class ModbusWorker extends BaseWorker {
                         regCount[0] = buffer[4];
                         regCount[1] = buffer[5];
                         short regCountS = ByteUtils.byteArrayToShort(regCount);
+                        LogUtils.debug("__write multiple-value, start address:" + LogUtils.getBytesString(address) + ", regCount:" + regCountS);
                         short dataLen = ByteUtils.byteArrayToShort(new byte[]{0x00, buffer[6]});
                         byte[] data = new byte[dataLen];
                         System.arraycopy(buffer, 7, data, 0, dataLen);
@@ -83,6 +85,7 @@ public class ModbusWorker extends BaseWorker {
                         System.arraycopy(buffer, 0, resBuf, 0, 6);
                         byte[] crcV = utils.CRC16Modbus.calCRC(resBuf, 0, resBuf.length - 2);
                         System.arraycopy(crcV, 0, resBuf, resBuf.length -2, crcV.length);
+                        LogUtils.debug(LogUtils.getBytesString(resBuf));
                         out.write(resBuf, 0, resBuf.length);
                     } else if (funCode == (byte) 0x03) {
                         // 读多个寄存器
@@ -93,6 +96,7 @@ public class ModbusWorker extends BaseWorker {
                         regCount[0] = buffer[4];
                         regCount[1] = buffer[5];
                         short regCountS = ByteUtils.byteArrayToShort(regCount);
+                        LogUtils.log("__read multiple-value, start address:" + LogUtils.getBytesString(address) + ", regCount:" + regCountS);
                         byte[] data = new byte[1024];
                         short len = 0;
                         for (short i = 0; i < regCountS; i++) {
@@ -113,6 +117,7 @@ public class ModbusWorker extends BaseWorker {
                         System.arraycopy(data, 0, resBuf, 3, len);
                         byte[] crcV = utils.CRC16Modbus.calCRC(resBuf, 0, resBuf.length - 2);
                         System.arraycopy(crcV, 0, resBuf, resBuf.length -2, crcV.length);
+                        LogUtils.debug(LogUtils.getBytesString(resBuf));
                         out.write(resBuf, 0, resBuf.length);
                     }
                 }
