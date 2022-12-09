@@ -12,5 +12,8 @@ Siemens S7 protocol.
 Melsec Qna-3E Binary
 
 ### Modbus
-WIP
+Modbus-RTU
+
+### Omron
+Fins-TCP (WIP)
 
