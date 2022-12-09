@@ -77,8 +77,7 @@ public class CRC16Modbus implements Checksum {
      * Example:
      * input: int[] data = new int[]{0x01, 0x06, 0x01, 0x05, 0x01, (byte) 0x90};
      * output:
-     * [0x99, 0xCB] (Little endian) calCRCL()
-     * [0xCB, 0x99] (Big endian) calCRC()
+     * [0x99, 0xCB] (Little endian)
      */
     public static byte[] calCRC(byte[] data, int offset, int len) {
         CRC16Modbus crc = new CRC16Modbus();
