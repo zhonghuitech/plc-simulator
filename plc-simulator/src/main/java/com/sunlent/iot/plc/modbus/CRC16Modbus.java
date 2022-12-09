@@ -5,6 +5,8 @@ import com.sunlent.iot.plc.util.LogUtils;
 import java.util.zip.Checksum;
 
 /**
+ * <a href="http://www.ip33.com/crc.html">CRC（循环冗余校验）在线计算</a>
+ * <a href="https://mp.weixin.qq.com/s/jY_JTYViQoHPXzquinhTzg">CRC校验原来这么简单</a>
  * @author aborn (jiangguobao)
  * @date 2022/12/09 10:58
  */
