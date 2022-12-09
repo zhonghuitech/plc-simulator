@@ -12,7 +12,7 @@ import java.net.Socket;
 
 /**
  * <a href="https://blog.csdn.net/xiketangAndy/article/details/120267036">FinsTCP协议报文详细分析</a>
- *
+ * <a href="https://blog.csdn.net/weixin_37700863/article/details/120536223">欧姆龙PLC的FinsTCP协议</a>
  * @author aborn (jiangguobao)
  * @date 2022/12/09 15:55
  */

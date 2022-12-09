@@ -124,8 +124,8 @@ public class ModbusWorker extends BaseWorker {
                     }
                 }
 
-                round++;
                 LogUtils.log("---------E:" + round + "---------");
+                round++;
             }
         } catch (IOException ioException) {
             LogUtils.log("handleClient io exception." + ioException.getMessage());

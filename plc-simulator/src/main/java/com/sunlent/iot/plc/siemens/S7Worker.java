@@ -170,8 +170,8 @@ public class S7Worker extends BaseWorker {
                     out.write(PLCConstents.S7_1200_SUCCESS, 0, PLCConstents.S7_1200_SUCCESS.length);
                 }
 
-                round++;
                 LogUtils.log("---------E:" + round + "---------");
+                round++;
             }
             LogUtils.log(this.getArea() + " handleClient finished." + this.socketid + ", " + this.socket);
         } catch (IOException ioException) {

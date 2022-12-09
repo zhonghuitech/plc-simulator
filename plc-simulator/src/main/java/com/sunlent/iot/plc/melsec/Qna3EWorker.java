@@ -99,8 +99,8 @@ public class Qna3EWorker extends BaseWorker {
                     out.write(PLCConstents.Qna3E_WRITE_SUCCESS, 0, PLCConstents.Qna3E_WRITE_SUCCESS.length);
                 }
 
-                round++;
                 LogUtils.log("---------E:" + round + "---------");
+                round++;
             }
             LogUtils.log(this.getArea() + " handleClient finished." + this.socketid + ", " + this.socket);
         } catch (IOException ioException) {
