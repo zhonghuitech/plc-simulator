@@ -42,10 +42,10 @@ public class ModbusWorker extends BaseWorker {
                 LogUtils.log("---------S:" + round + "---------");
 
                 // 设备编号
-                byte deviceId = buffer[0];
+                byte[] deviceId = new byte[]{buffer[0]};
                 byte funCode = buffer[1];
 
-                if (deviceId == (byte) 0x00) {
+                if (deviceId[0] == (byte) 0x00) {
                     // boradcast
                 } else {
                     if (funCode == (byte) 0x06) {
@@ -56,12 +56,59 @@ public class ModbusWorker extends BaseWorker {
                         byte[] data = new byte[2];
                         data[0] = buffer[4];
                         data[1] = buffer[5];
-                        write(ByteUtils.bytesToString(address), data);
+
+                        write(ByteUtils.bytesToString(deviceId, address), data);
                         out.write(buffer, 0, n);
                     } else if (funCode == (byte) 0x10) {
                         // 写多个保持寄存器
+                        byte[] address = new byte[2];
+                        address[0] = buffer[2];
+                        address[1] = buffer[3];
+                        byte[] regCount = new byte[2];
+                        regCount[0] = buffer[4];
+                        regCount[1] = buffer[5];
+                        short regCountS = ByteUtils.byteArrayToShort(regCount);
+                        short dataLen = ByteUtils.byteArrayToShort(new byte[]{0x00, buffer[6]});
+                        byte[] data = new byte[dataLen];
+                        System.arraycopy(buffer, 7, data, 0, dataLen);
+                        for (short i = 0; i < regCountS; i++) {
+                            byte[] currentAddress = ByteUtils.byteAddressPlus(address, i);
+                            byte[] dataCurrent = new byte[]{data[i * 2], data[i * 2 + 1]};
+                            LogUtils.log("write address:" + LogUtils.getBytesString(currentAddress) + ", val:" + LogUtils.getBytesString(dataCurrent));
+                            write(ByteUtils.bytesToString(deviceId, currentAddress), dataCurrent);
+                        }
+                        byte[] resBuf = new byte[8];
+                        System.arraycopy(buffer, 0, resBuf, 0, 6);
+                        // todo CRC byte[6-7]
+                        out.write(resBuf, 0, resBuf.length);
                     } else if (funCode == (byte) 0x03) {
                         // 读多个寄存器
+                        byte[] address = new byte[2];
+                        address[0] = buffer[2];
+                        address[1] = buffer[3];
+                        byte[] regCount = new byte[2];
+                        regCount[0] = buffer[4];
+                        regCount[1] = buffer[5];
+                        short regCountS = ByteUtils.byteArrayToShort(regCount);
+                        byte[] data = new byte[1024];
+                        short len = 0;
+                        for (short i = 0; i < regCountS; i++) {
+                            byte[] currentAddress = ByteUtils.byteAddressPlus(address, i);
+                            byte[] dataCurrent = read(ByteUtils.bytesToString(deviceId, currentAddress));
+                            if (dataCurrent == null) {
+                                dataCurrent = new byte[2];
+                            }
+                            System.arraycopy(dataCurrent, 0, data, len, dataCurrent.length);
+                            len += dataCurrent.length;
+                        }
+                        byte[] dataLen = ByteUtils.shortToByteArray(len);
+                        byte[] resBuf = new byte[2 + 1 + len + 2];
+                        System.arraycopy(buffer, 0, resBuf, 0, 2);
+                        // the length of return data (unit: byte)
+                        resBuf[2] = dataLen[1];
+                        System.arraycopy(dataLen, 0, resBuf, 3, len);
+                        // todo CRC byte[last 2 bytes]
+                        out.write(resBuf, 0, resBuf.length);
                     }
                 }
 

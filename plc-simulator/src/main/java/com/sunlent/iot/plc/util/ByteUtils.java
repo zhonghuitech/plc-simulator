@@ -58,6 +58,11 @@ public class ByteUtils {
                         (b[0] & 0xFF) << 8);
     }
 
+    public static byte[] byteAddressPlus(byte[] startAddress, short step) {
+        short start = byteArrayToShort(startAddress);
+        return shortToByteArray((short) (start + step));
+    }
+
     /**
      * Little endian
      *
@@ -73,6 +78,7 @@ public class ByteUtils {
 
     /**
      * Little endian
+     *
      * @param sV
      * @return
      */
@@ -84,8 +90,13 @@ public class ByteUtils {
         return res;
     }
 
-    public static String bytesToString(byte[] bytes) {
-        return HexFormat.of().formatHex(bytes);
+    public static String bytesToString(byte[]... bytes) {
+        StringBuilder sb = new StringBuilder();
+        HexFormat hexFormat = HexFormat.of();
+        for (byte[] item : bytes) {
+            sb.append(hexFormat.formatHex(item));
+        }
+        return sb.toString();
     }
 
     public static void main(String[] args) {
@@ -95,5 +106,10 @@ public class ByteUtils {
         test[0] = 0x11;
         test[1] = (byte) 0xfe;
         System.out.println(bytesToString(test));
+
+        byte[] startAddress = new byte[]{0x01, 0x05};
+        for (short i = 0; i < 3; i++) {
+            LogUtils.log(LogUtils.getBytesString(byteAddressPlus(startAddress, i)));
+        }
     }
 }
