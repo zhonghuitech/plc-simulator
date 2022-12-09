@@ -111,5 +111,8 @@ public class ByteUtils {
         for (short i = 0; i < 3; i++) {
             LogUtils.log(LogUtils.getBytesString(byteAddressPlus(startAddress, i)));
         }
+
+        byte[] in = intToByteArray(30);
+        LogUtils.log(LogUtils.getBytesString(in));
     }
 }

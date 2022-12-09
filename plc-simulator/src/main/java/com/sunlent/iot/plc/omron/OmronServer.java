@@ -15,7 +15,7 @@ public class OmronServer extends BaseServer {
 
     public OmronServer() throws IOException {
         super(9600);
-        this.name = "Omron-TCP";
+        this.name = "Omron-Fins-TCP";
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.sunlent.iot.plc.util.LogUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 
 /**
@@ -97,6 +98,7 @@ public class ModbusWorker extends BaseWorker {
                         regCount[1] = buffer[5];
                         short regCountS = ByteUtils.byteArrayToShort(regCount);
                         LogUtils.log("__read multiple-value, start address:" + LogUtils.getBytesString(address) + ", regCount:" + regCountS);
+
                         byte[] data = new byte[1024];
                         short len = 0;
                         for (short i = 0; i < regCountS; i++) {
