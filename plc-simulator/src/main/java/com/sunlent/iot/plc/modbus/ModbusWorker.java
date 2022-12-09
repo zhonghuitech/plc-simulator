@@ -1,6 +1,7 @@
 package com.sunlent.iot.plc.modbus;
 
 import com.sunlent.iot.plc.base.BaseWorker;
+import com.sunlent.iot.plc.util.ByteUtils;
 import com.sunlent.iot.plc.util.LogUtils;
 
 import java.io.IOException;
@@ -45,16 +46,18 @@ public class ModbusWorker extends BaseWorker {
                 byte funCode = buffer[1];
 
                 if (deviceId == (byte) 0x00) {
-                    // 广播
+                    // boradcast
                 } else {
                     if (funCode == (byte) 0x06) {
-                        // 单个写
+                        // single write
                         byte[] address = new byte[2];
                         address[0] = buffer[2];
                         address[1] = buffer[3];
                         byte[] data = new byte[2];
                         data[0] = buffer[4];
                         data[1] = buffer[5];
+                        write(ByteUtils.bytesToString(address), data);
+                        out.write(buffer, 0, n);
                     } else if (funCode == (byte) 0x10) {
                         // 写多个保持寄存器
                     } else if (funCode == (byte) 0x03) {

@@ -1,5 +1,7 @@
 package com.sunlent.iot.plc.util;
 
+import java.util.HexFormat;
+
 /**
  * byte相关的函数
  *
@@ -82,8 +84,16 @@ public class ByteUtils {
         return res;
     }
 
+    public static String bytesToString(byte[] bytes) {
+        return HexFormat.of().formatHex(bytes);
+    }
+
     public static void main(String[] args) {
         byte[] bytes = new byte[]{(byte) 0xfe, (byte) 0x02, (byte) 0x00, (byte) 0x00};
         System.out.println(byteArrayToInt(bytes));
+        byte[] test = new byte[2];
+        test[0] = 0x11;
+        test[1] = (byte) 0xfe;
+        System.out.println(bytesToString(test));
     }
 }
