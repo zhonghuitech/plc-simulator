@@ -52,8 +52,7 @@ import { NantaTable, NantaTableAction, useTable, ActionItem, NantaFormModal, Mod
 import { columns, data, searchFormSchema, editModalSchema, editModalSchema2 } from "./data"
 import { ActionType } from './type'
 import { createAxiosFetch } from '/@/utils/http/axiosFetch';
-// import { url } from '/@/settings/localSetting';
-const url = 'https://mock.data/api/mock/meta';
+const url = 'http://127.0.0.1:8090/api/v1/read';
 
 const checkedKeys = ref<Array<string | number>>([]);
 const operation = ref({ copyEnabled: false, createEnabled: true, modifyEnabled: false, deleteEnabled: false });
@@ -127,7 +126,7 @@ const [registerTable, { updateTableDataRecord, deleteTableDataRecord, findTableD
     title: 'PLC Simulator Example.',
     columns,
     dataSource: data,
-    // api: createAxiosFetch(url),
+    api: createAxiosFetch(url),
     afterFetch: transfer,
     fetchSetting,
     actionColumn: {
