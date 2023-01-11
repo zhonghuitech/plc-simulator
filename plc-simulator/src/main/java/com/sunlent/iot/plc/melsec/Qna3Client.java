@@ -46,6 +46,8 @@ public class Qna3Client {
                 System.out.println("Read data");
                 LogUtils.log(LogUtils.getBytesString(buffer, n));
             }
+            socket.close();
+            LogUtils.log("closed socket!");
         } catch (IOException ioException) {
             System.out.println("ioException" + ioException.getMessage());
         }

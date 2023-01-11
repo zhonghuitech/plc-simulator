@@ -44,7 +44,7 @@ public class BaseServer extends Thread {
                 LogUtils.log(this.name + " waiting for connect，listen port：" + this.getPort());
                 Socket client = this.socket.accept();
                 this.countPlusOne();
-                LogUtils.log("new access : InetAddress = "
+                LogUtils.log("new access " + getCount() + ": InetAddress = "
                         + this.socket);
                 LogUtils.log("timeout：" + socket.getSoTimeout() + ", current:" + count);
                 if (this.getCount() < PLCConstents.MAX_CONNECT_COUNT) {
