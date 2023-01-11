@@ -6,6 +6,7 @@
     <modules>
         <module>plc-simulator</module>
         <module>plc-simulator-demo</module>
+        <module>plc-simulator-serv</module>
     </modules>
     <packaging>pom</packaging>
     <name>${project.groupId}:${project.artifactId}</name>
