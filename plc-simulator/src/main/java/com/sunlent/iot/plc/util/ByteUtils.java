@@ -23,6 +23,26 @@ public class ByteUtils {
                 (b[0] & 0xFF) << 24;
     }
 
+    /**
+     * TODO unfinished!
+     * @param b
+     * @return
+     */
+    public static int byteArrayToLong(byte[] b) {
+        return b[3] & 0xFF |
+                (b[2] & 0xFF) << 8 |
+                (b[1] & 0xFF) << 16 |
+                (b[0] & 0xFF) << 24;
+    }
+
+    public static int byteArrayToIntL(byte[] b) {
+        byte[] a = new byte[b.length];
+        for (int i = 0; i < b.length; i++) {
+            a[i] = b[b.length - i - 1];
+        }
+        return byteArrayToInt(a);
+    }
+
     public static byte[] intToByteArray(int a) {
         return new byte[]{
                 (byte) ((a >> 24) & 0xFF),
@@ -114,5 +134,9 @@ public class ByteUtils {
 
         byte[] in = intToByteArray(30);
         LogUtils.log(LogUtils.getBytesString(in));
+
+        byte[] demo = new byte[]{0x01, 0x00, 0x00, 0x00};
+        System.out.println(byteArrayToInt(demo));
+        System.out.println(byteArrayToIntL(demo));
     }
 }
