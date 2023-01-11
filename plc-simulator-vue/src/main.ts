@@ -1,8 +1,12 @@
 import { createApp } from 'vue'
-import './style.css'
 import App from './App.vue'
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
+import { setupRouter } from './router';
+import { setupNanta } from '@nanta/ui';
+import '@nanta/ui/dist/style.css';
 
-createApp(App).use(Antd).mount('#app')
-
+const app = createApp(App);
+setupRouter(app);
+setupNanta(app);
+app.use(Antd).mount('#app')
