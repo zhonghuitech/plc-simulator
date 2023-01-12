@@ -5,7 +5,7 @@
         <template #headerTop>
             <div style="margin-bottom: 10px;">
                 <NantaButton type="primary" @click="handleCreate" :disabled="!operation.createEnabled" class="button-s"
-                    preIcon="ic:baseline-plus">Add Reg</NantaButton>
+                    preIcon="ic:baseline-plus">Add Register</NantaButton>
                 <NantaButton type="primary" danger @click="handleMultiDelete" :disabled="!operation.deleteEnabled"
                     class="button-s" preIcon="ic:baseline-delete">Delete</NantaButton>
             </div>
@@ -106,7 +106,7 @@ const fetchSetting = {
     totalField: 'totalElements',
 };
 
-const [registerTable, { updateTableDataRecord, deleteTableDataRecord, findTableDataRecord, reload }] = useTable({
+const [registerTable, { updateTableDataRecord, deleteTableDataRecord, findTableDataRecord, reload, insertTableDataRecord }] = useTable({
     title: 'PLC Simulator Example.',
     columns,
     api: createAxiosFetch(url),
@@ -161,7 +161,13 @@ const [registerModal2, { openModal: openModal2, closeModal: closeModal2 }] = use
 
 const handleOK2 = (newRecord: Recordable, oldRecord: Recordable) => {
     console.log('handleOK2 in outer event callback', newRecord, oldRecord)
-    updateTableDataRecord(oldRecord.key, newRecord)
+    if (oldRecord.key) {
+        // modify
+        updateTableDataRecord(oldRecord.key, newRecord)
+    } else {
+        // create new
+        insertTableDataRecord(newRecord)
+    }
     closeModal()
 }
 
@@ -185,26 +191,8 @@ function handleDelete(record: Recordable) {
     console.log(record);
 }
 
-function handleCopyCreate() {
-    console.log('copycreate');
-    if (checkedKeys.value.length > 0) {
-        const key = checkedKeys.value[0];
-        const record = findTableDataRecord(key)
-        doModifyAction(key, ActionType.COPY_CREATE, record as Recordable);
-    }
-}
-
 function handleCreate() {
     doModifyAction(0, ActionType.CREATE);
-}
-
-function handleModify() {
-    console.log('modify');
-    if (checkedKeys.value.length > 0) {
-        const key = checkedKeys.value[0];
-        const record = findTableDataRecord(key)
-        doModifyAction(key, ActionType.MODIFY, record as Recordable);
-    }
 }
 
 function handleMultiDelete() {

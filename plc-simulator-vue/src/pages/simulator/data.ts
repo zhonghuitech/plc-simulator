@@ -82,15 +82,40 @@ export const editModalSchema: FormSchema[] = [
 
 export const editModalSchema2: FormSchema[] = [
   {
-    field: 'name2',
-    label: 'Name2',
-    component: 'Input',
+    field: 'area',
+    label: 'Area',
+    component: 'Select',
     colProps: { span: 24 },
+    defaultValue: 'QNA3E',
+    componentProps: {
+      options: [
+        {
+          label: 'MELSEC QNA3E',
+          value: 'QNA3E',
+          key: 'QNA3E',
+        },
+        {
+          label: 'MODBUS',
+          value: 'MODBUS',
+          key: 'MODBUS',
+        },
+        {
+          label: 'SIEMENS S7',
+          value: 'S7WORKER',
+          key: 'S7WORKER',
+        },
+        {
+          label: 'OMRON',
+          value: 'OMRON',
+          key: 'OMRON',
+        },
+      ],
+    },
   }, 
   {
-    field: 'age2',
-    label: 'Age2',
-    component: 'InputNumber', 
+    field: 'address',
+    label: 'Address',
+    component: 'Input', 
     colProps: { span: 24 },
   }
 ]
