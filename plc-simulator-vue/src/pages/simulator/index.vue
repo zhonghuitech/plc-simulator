@@ -49,7 +49,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { NantaTable, NantaTableAction, useTable, ActionItem, NantaFormModal, ModalInnerRecord, NantaFormModalProps, NantaButton, useModal, Recordable} from "@nanta/ui";
-import { columns, data, searchFormSchema, editModalSchema, editModalSchema2 } from "./data"
+import { columns, searchFormSchema, editModalSchema, editModalSchema2 } from "./data"
 import { ActionType } from './type'
 import { createAxiosFetch } from '/@/utils/http/axiosFetch';
 const url = 'http://127.0.0.1:8090/api/v1/read';
@@ -84,31 +84,16 @@ function getAction(record: Recordable): ActionItem[] {
     return actions;
 }
 
-interface DemoResult {
-    createBy?: string;
-    updateBy?: string;
-    createTime?: number;
-    updateTime?: number;
-    id: number;
-    articleid: string;
-    title: string;
-    desc: string;
-    tags?: string;
-    space?: string;
-    category?: string;
-    refArticleid?: string;
+interface RegData {   
+    address: string;
+    value: string;
 }
 
-function transfer(params: DemoResult[]) {
+function transfer(params: RegData[]) {
     const tData = params.map((item) => {
         return {
-            key: item.articleid,
-            name: item.title,
-            age: item.id,
-            email: item.space,
-            address: item.desc.substring(0, 10),
-            tags: [item.tags],
-            gender: 1,
+            address: item.address,
+            value: item.value,
         }
     })
     console.log(tData)
@@ -125,7 +110,6 @@ const fetchSetting = {
 const [registerTable, { updateTableDataRecord, deleteTableDataRecord, findTableDataRecord }] = useTable({
     title: 'PLC Simulator Example.',
     columns,
-    dataSource: data,
     api: createAxiosFetch(url),
     afterFetch: transfer,
     fetchSetting,

@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,7 +30,7 @@ public class PlcSimulatorController {
     }
 
     @GetMapping("/read")
-    public Result<RegData> read(String area, String address) {
+    public Result<List<RegData>> read(String area, String address) {
         byte[] value = SimuData.get(area, address);
         RegData regData = new RegData();
         regData.setAddress(address);
@@ -39,6 +41,8 @@ public class PlcSimulatorController {
                 regData.setValue(ByteUtils.byteArrayToIntL(value));
             } // todo toLong
         }
-        return Result.of(regData);
+        List<RegData> list = new ArrayList<>();
+        list.add(regData);
+        return Result.of(list);
     }
 }
