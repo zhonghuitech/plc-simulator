@@ -3,9 +3,9 @@
         :rowSelection="{ type: 'checkbox', selectedRowKeys: checkedKeys, onChange: onSelectChange }"
         :clickToRowSelect="false">
         <template #headerTop>
-            <div style="margin-bottom: 10px;">                
+            <div style="margin-bottom: 10px;">
                 <NantaButton type="primary" @click="handleCreate" :disabled="!operation.createEnabled" class="button-s"
-                    preIcon="ic:baseline-plus">Create new</NantaButton>                
+                    preIcon="ic:baseline-plus">Add Reg</NantaButton>
                 <NantaButton type="primary" danger @click="handleMultiDelete" :disabled="!operation.deleteEnabled"
                     class="button-s" preIcon="ic:baseline-delete">Delete</NantaButton>
             </div>
@@ -47,8 +47,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import { NantaTable, NantaTableAction, useTable, ActionItem, NantaFormModal, ModalInnerRecord, NantaFormModalProps, NantaButton, useModal, Recordable} from "@nanta/ui";
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { NantaTable, NantaTableAction, useTable, ActionItem, NantaFormModal, ModalInnerRecord, NantaFormModalProps, NantaButton, useModal, Recordable } from "@nanta/ui";
 import { columns, searchFormSchema, editModalSchema, editModalSchema2 } from "./data"
 import { ActionType } from './type'
 import { createAxiosFetch } from '/@/utils/http/axiosFetch';
@@ -84,7 +84,7 @@ function getAction(record: Recordable): ActionItem[] {
     return actions;
 }
 
-interface RegData {   
+interface RegData {
     address: string;
     value: string;
 }
@@ -96,7 +96,6 @@ function transfer(params: RegData[]) {
             value: item.value,
         }
     })
-    console.log(tData)
     return tData;
 }
 
@@ -107,7 +106,7 @@ const fetchSetting = {
     totalField: 'totalElements',
 };
 
-const [registerTable, { updateTableDataRecord, deleteTableDataRecord, findTableDataRecord }] = useTable({
+const [registerTable, { updateTableDataRecord, deleteTableDataRecord, findTableDataRecord, reload }] = useTable({
     title: 'PLC Simulator Example.',
     columns,
     api: createAxiosFetch(url),
@@ -249,6 +248,17 @@ function onSelectChange(selectedRowKeys: (string | number)[]) {
         operation.value = { copyEnabled: false, createEnabled: true, modifyEnabled: false, deleteEnabled: true };
     }
 }
+
+let timer: any = null;
+onMounted(() => {
+    timer = setInterval(reload, 1000);
+})
+
+onBeforeUnmount(() => {
+    if (timer) {
+        clearInterval(timer);
+    }
+})
 </script>
 
 <style scoped>

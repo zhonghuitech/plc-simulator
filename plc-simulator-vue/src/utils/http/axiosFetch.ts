@@ -21,7 +21,6 @@ export function createAxiosFetch(url: string, method?: string) {
                     address: 'D100',
                 }
             }).then(function (response) {
-                console.log(response);
                 resolve(response.data.result);
             }).catch(function (error) {
                 console.log(error);
