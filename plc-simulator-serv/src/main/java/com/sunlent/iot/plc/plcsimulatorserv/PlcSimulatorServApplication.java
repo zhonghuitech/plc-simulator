@@ -6,6 +6,9 @@ import com.sunlent.iot.plc.omron.OmronServer;
 import com.sunlent.iot.plc.siemens.S7Server;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.io.IOException;
 
@@ -28,6 +31,17 @@ public class PlcSimulatorServApplication {
 			System.out.println("exception start simulator.!");
 		}
 		System.out.println("finished starting simulator!");
+	}
+
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/api/v1/**")
+						.allowedOrigins("*");
+			}
+		};
 	}
 
 }
