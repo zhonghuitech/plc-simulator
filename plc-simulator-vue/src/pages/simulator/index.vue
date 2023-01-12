@@ -251,7 +251,9 @@ function onSelectChange(selectedRowKeys: (string | number)[]) {
 
 let timer: any = null;
 onMounted(() => {
-    timer = setInterval(reload, 1000);
+    timer = setInterval(() => {
+        reload({ reload: false })
+    }, 1000);
 })
 
 onBeforeUnmount(() => {

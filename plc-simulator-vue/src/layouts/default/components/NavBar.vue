@@ -2,7 +2,7 @@
   <a-layout-header class="header">
     <div class="logo" style="font-size: x-large; color: azure">
       <router-link to="/" aria-label="Back home">
-        <img src="/favicon.ico" class="nanta-logo" /> Nanta
+        <img src="/favicon.ico" class="nanta-logo" /> PLC Simu
       </router-link>
     </div>
 
