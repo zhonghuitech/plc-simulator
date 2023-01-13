@@ -29,10 +29,7 @@
             </div>
         </template>
         <template #bodyCell="{ column, record }">
-            <template v-if="column.key === 'action'">
-                <NantaTableAction :actions="getAction(record)" />
-            </template>
-            <template v-else-if="column.key === 'tags'">
+            <template v-if="column.key === 'tags'">
                 <span>
                     <a-tag v-for="tag in record.tags" :key="tag"
                         :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'">
@@ -43,46 +40,18 @@
         </template>
     </NantaTable>
     <NantaFormModal @register="registerModal" v-bind="mProps" @ok="handleOK" @cancel="handleCancel" />
-    <NantaFormModal @register="registerModal2" v-bind="mProps2" @ok="handleOK2" @cancel="handleCancel2" />
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { NantaTable, NantaTableAction, useTable, ActionItem, NantaFormModal, ModalInnerRecord, NantaFormModalProps, NantaButton, useModal, Recordable } from "@nanta/ui";
-import { columns, searchFormSchema, editModalSchema, editModalSchema2 } from "./data"
+import { NantaTable, useTable, NantaFormModal, ModalInnerRecord, NantaFormModalProps, NantaButton, useModal, Recordable, FetchParams } from "@nanta/ui";
+import { columns, searchFormSchema, editModalSchema } from "./data"
 import { ActionType } from './type'
 import { createAxiosFetch } from '/@/utils/http/axiosFetch';
 const url = 'http://127.0.0.1:8090/api/v1/read';
 
 const checkedKeys = ref<Array<string | number>>([]);
 const operation = ref({ copyEnabled: false, createEnabled: true, modifyEnabled: false, deleteEnabled: false });
-
-function getAction(record: Recordable): ActionItem[] {
-    const ifShow = (action: ActionItem) => {
-        const value = (record.gender && (record.gender === 1 || record.gender === 2));
-        if (!value && action.label === 'Delete') {
-            return false;
-        }
-        return true;
-    };
-
-    const actions: ActionItem[] = [
-        {
-            icon: 'clarity:note-edit-line',
-            label: 'Edit',
-            onClick: handleEdit.bind(null, record),
-        },
-        {
-            icon: 'ant-design:delete-outlined',
-            color: 'error',
-            label: 'Delete',
-            onClick: handleDelete.bind(null, record),
-        },
-    ]
-    actions.forEach(item => { item.ifShow = ifShow })
-
-    return actions;
-}
 
 interface RegData {
     address: string;
@@ -106,18 +75,12 @@ const fetchSetting = {
     totalField: 'totalElements',
 };
 
-const [registerTable, { updateTableDataRecord, deleteTableDataRecord, findTableDataRecord, reload, insertTableDataRecord }] = useTable({
+const [registerTable, { updateTableDataRecord, reload, insertTableDataRecord }] = useTable({
     title: 'PLC Simulator Example.',
     columns,
     api: createAxiosFetch(url),
     afterFetch: transfer,
     fetchSetting,
-    actionColumn: {
-        title: 'Actions',
-        dataIndex: 'action',
-        // slots: { customRender: 'action' },
-        fixed: undefined,
-    },
     useSearchForm: false,
     searchFormConfig: {
         labelWidth: 120,
@@ -129,37 +92,12 @@ const [registerTable, { updateTableDataRecord, deleteTableDataRecord, findTableD
 
 const mProps: NantaFormModalProps = {
     schemas: editModalSchema,
-    colon: true,
-    modalProps: {
-        okText: "I'm sure.",
-        cancelText: 'Reject',
-    }
-}
-
-const [registerModal, { openModal, closeModal, setModalProps, changeLoading, changeOkLoading }] = useModal();
-
-const mProps2: NantaFormModalProps = {
-    schemas: editModalSchema2,
     colon: true
 }
 
-const handleOK = async (newRecord: Recordable, oldRecord: Recordable) => {
-    console.log('handleOK in outer event callback', newRecord, oldRecord)
-    updateTableDataRecord(oldRecord.key, newRecord)
-    changeLoading(true);
-    changeOkLoading(true);
-    // closeModal()
-    changeOkLoading(false)
-    changeLoading(false)
-}
+const [registerModal, { openModal, closeModal }] = useModal();
 
-const handleCancel = (newRecord: Recordable, oldRecord: Recordable) => {
-    console.log('handle cancel in outer event callback', newRecord, oldRecord);
-}
-
-const [registerModal2, { openModal: openModal2, closeModal: closeModal2 }] = useModal();
-
-const handleOK2 = (newRecord: Recordable, oldRecord: Recordable) => {
+const handleOK = (newRecord: Recordable, oldRecord: Recordable) => {
     console.log('handleOK2 in outer event callback', newRecord, oldRecord)
     if (oldRecord.key) {
         // modify
@@ -171,24 +109,8 @@ const handleOK2 = (newRecord: Recordable, oldRecord: Recordable) => {
     closeModal()
 }
 
-const handleCancel2 = (newRecord: Recordable, oldRecord: Recordable) => {
+const handleCancel = (newRecord: Recordable, oldRecord: Recordable) => {
     console.log('handle cancel in outer event callback', newRecord, oldRecord);
-}
-
-function handleEdit(record: Recordable) {
-    console.log('edit clicked!');
-    console.log(record);
-    const innerRecord: ModalInnerRecord = {
-        title: "Edit",
-        record
-    }
-
-    openModal(true, innerRecord)
-}
-
-function handleDelete(record: Recordable) {
-    console.log('delete action clicked!');
-    console.log(record);
 }
 
 function handleCreate() {
@@ -218,9 +140,7 @@ const doModifyAction = (id: string | number, type: ActionType, record?: Recordab
     }
 
     if (type == ActionType.CREATE) {
-        openModal2(true, innerRecord);
-    } else {
-        openModal(true, innerRecord)
+        openModal(true, innerRecord);
     }
 };
 
@@ -239,9 +159,7 @@ function onSelectChange(selectedRowKeys: (string | number)[]) {
 
 let timer: any = null;
 onMounted(() => {
-    timer = setInterval(() => {
-        reload({ reload: false })
-    }, 1000);
+    // timer = setInterval(() => reload({ reload: false } as FetchParams), 1000);
 })
 
 onBeforeUnmount(() => {
