@@ -63,6 +63,11 @@ export const editModalSchema: FormSchema[] = [
 
 export const columns: BasicColumn[] = [
   {
+    title: "Area",
+    dataIndex: "area",
+    key: "area",
+  },
+  {
     title: "Address",
     dataIndex: "address",
     key: "address",

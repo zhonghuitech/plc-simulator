@@ -1,7 +1,6 @@
 package com.sunlent.iot.plc.plcsimulatorserv.api;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * @author aborn (jiangguobao)

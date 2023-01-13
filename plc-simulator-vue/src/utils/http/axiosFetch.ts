@@ -13,7 +13,6 @@ export function createAxiosFetch(url: string, method?: string) {
 
     return (params: FetchParams) : Promise<any> => {
         return new Promise((resolve, reject) => {
-            console.log(params)
             axios({
                 method: httpMethod,
                 url: url,

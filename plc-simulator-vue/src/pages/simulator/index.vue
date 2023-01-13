@@ -54,6 +54,7 @@ const checkedKeys = ref<Array<string | number>>([]);
 const operation = ref({ copyEnabled: false, createEnabled: true, modifyEnabled: false, deleteEnabled: false });
 
 interface RegData {
+    area: string,
     address: string;
     value: string;
 }
@@ -61,6 +62,7 @@ interface RegData {
 function transfer(params: RegData[]) {
     const tData = params.map((item) => {
         return {
+            area: item.area,
             address: item.address,
             value: item.value,
         }
@@ -74,25 +76,29 @@ const fetchSetting = {
     listField: 'content',
     totalField: 'totalElements',
 };
+const dyRegs = [
+    {
+        area: 'QNA3E',
+        address: 'D100',
+    }
+] as RegData[];
 
 function addRegAddress(params: Recordable) {
     params.data = {
         regs: [
-            {
-                area: 'QNA3E',
-                address: 'D100',
-            }
+            ...dyRegs,
         ]
     }
     return params;
 }
 
-const [registerTable, { updateTableDataRecord, reload, insertTableDataRecord }] = useTable({
+const [registerTable, { updateTableDataRecord, reload, insertTableDataRecord, setSelectedRowKeys, getSelectRowKeys }] = useTable({
     title: 'PLC Simulator Example.',
     columns,
     api: createAxiosFetch(url, 'post'),
     afterFetch: transfer,
     beforeFetch: addRegAddress,
+    rowKey: (record: Recordable) => record.area + record.address,
     fetchSetting,
     useSearchForm: false,
     searchFormConfig: {
@@ -117,6 +123,13 @@ const handleOK = (newRecord: Recordable, oldRecord: Recordable) => {
         updateTableDataRecord(oldRecord.key, newRecord)
     } else {
         // create new
+        const reg = newRecord as RegData;
+        const idx = dyRegs.findIndex((i) => i.area + i.address === reg.area + reg.address);
+        if (idx < 0) {
+            dyRegs.push(reg);
+        } else {
+            console.log('already exists!')
+        }
         insertTableDataRecord(newRecord)
     }
     closeModal()
@@ -131,7 +144,16 @@ function handleCreate() {
 }
 
 function handleMultiDelete() {
-    console.log('delete', checkedKeys);
+    console.log('delete');
+    const keys = getSelectRowKeys();
+    console.log(getSelectRowKeys())
+    keys.forEach((item) => {
+        const idx = dyRegs.findIndex((i) => i.area + i.address === item)
+        if (idx > -1) {
+            dyRegs.splice(idx, 1);
+        }
+    })
+    operation.value = { copyEnabled: false, createEnabled: true, modifyEnabled: false, deleteEnabled: false };
 }
 
 const doModifyAction = (id: string | number, type: ActionType, record?: Recordable) => {
@@ -172,7 +194,7 @@ function onSelectChange(selectedRowKeys: (string | number)[]) {
 
 let timer: any = null;
 onMounted(() => {
-    // timer = setInterval(() => reload({ reload: false } as FetchParams), 1000);
+    timer = setInterval(() => reload({ reload: false } as FetchParams), 1000);
 })
 
 onBeforeUnmount(() => {
