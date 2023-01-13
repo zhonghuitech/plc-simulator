@@ -75,11 +75,24 @@ const fetchSetting = {
     totalField: 'totalElements',
 };
 
+function addRegAddress(params: Recordable) {
+    params.data = {
+        regs: [
+            {
+                area: 'QNA3E',
+                address: 'D100',
+            }
+        ]
+    }
+    return params;
+}
+
 const [registerTable, { updateTableDataRecord, reload, insertTableDataRecord }] = useTable({
     title: 'PLC Simulator Example.',
     columns,
-    api: createAxiosFetch(url),
+    api: createAxiosFetch(url, 'post'),
     afterFetch: transfer,
+    beforeFetch: addRegAddress,
     fetchSetting,
     useSearchForm: false,
     searchFormConfig: {

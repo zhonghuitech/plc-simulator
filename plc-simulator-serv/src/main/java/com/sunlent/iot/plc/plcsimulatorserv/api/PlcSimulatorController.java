@@ -1,11 +1,11 @@
 package com.sunlent.iot.plc.plcsimulatorserv.api;
 
 import com.sunlent.iot.plc.base.SimuData;
+import com.sunlent.iot.plc.plcsimulatorserv.http.Result;
 import com.sunlent.iot.plc.util.ByteUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,20 +29,23 @@ public class PlcSimulatorController {
         return Result.of(res);
     }
 
-    @GetMapping("/read")
-    public Result<List<RegData>> read(String area, String address) {
-        byte[] value = SimuData.get(area, address);
-        RegData regData = new RegData();
-        regData.setAddress(address);
-        if (value != null) {
-            if (value.length == 2) {
-                regData.setValue(ByteUtils.byteArrayToShortL(value));
-            } else if (value.length == 4) {
-                regData.setValue(ByteUtils.byteArrayToIntL(value));
-            } // todo toLong
-        }
+    @PostMapping("/read")
+    public Result<List<RegData>> read(@RequestBody RegRequest regs) {
         List<RegData> list = new ArrayList<>();
-        list.add(regData);
+        if (regs != null && !CollectionUtils.isEmpty(regs.getRegs())) {
+            for (RegData regData : regs.getRegs()) {
+                byte[] value = SimuData.get(regData.getArea(), regData.getAddress());
+                if (value != null) {
+                    if (value.length == 2) {
+                        regData.setValue(ByteUtils.byteArrayToShortL(value));
+                    } else if (value.length == 4) {
+                        regData.setValue(ByteUtils.byteArrayToIntL(value));
+                    } // todo toLong
+                }
+
+                list.add(regData);
+            }
+        }
         return Result.of(list);
     }
 }

@@ -1,6 +1,7 @@
 package com.sunlent.iot.plc.plcsimulatorserv.api;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author aborn (jiangguobao)
@@ -8,6 +9,11 @@ import lombok.Data;
  */
 @Data
 public class RegData {
+    public RegData() {
+    }
+
+    private String area;
+
     private String address;
 
     /**
