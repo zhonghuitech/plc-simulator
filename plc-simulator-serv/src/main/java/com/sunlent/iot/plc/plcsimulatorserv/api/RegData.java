@@ -20,7 +20,4 @@ public class RegData {
      */
     private String value;
 
-    public void setValue(int value) {
-        this.value = String.valueOf(value);
-    }
 }

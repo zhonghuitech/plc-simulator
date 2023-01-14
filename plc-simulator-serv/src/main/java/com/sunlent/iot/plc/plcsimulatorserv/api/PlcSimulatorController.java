@@ -1,6 +1,7 @@
 package com.sunlent.iot.plc.plcsimulatorserv.api;
 
 import com.sunlent.iot.plc.base.SimuData;
+import com.sunlent.iot.plc.melsec.Qna3EWorker;
 import com.sunlent.iot.plc.plcsimulatorserv.http.Result;
 import com.sunlent.iot.plc.util.ByteUtils;
 import lombok.RequiredArgsConstructor;
@@ -35,14 +36,12 @@ public class PlcSimulatorController {
         if (regs != null && !CollectionUtils.isEmpty(regs.getRegs())) {
             for (RegData regData : regs.getRegs()) {
                 byte[] value = SimuData.get(regData.getArea(), regData.getAddress());
-                if (value != null) {
-                    if (value.length == 2) {
-                        regData.setValue(ByteUtils.byteArrayToShortL(value));
-                    } else if (value.length == 4) {
-                        regData.setValue(ByteUtils.byteArrayToIntL(value));
-                    } // todo toLong
+                boolean isL = false;
+                if (Qna3EWorker.AREA.equals(regData.getArea())) {
+                    isL = true;
                 }
-
+                String v = ByteUtils.byteArrayNumberToValueString(value, isL);
+                regData.setValue(v == null ? "-" : v);
                 list.add(regData);
             }
         }

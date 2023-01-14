@@ -1,5 +1,6 @@
 package com.sunlent.iot.plc.util;
 
+import java.nio.ByteBuffer;
 import java.util.HexFormat;
 
 /**
@@ -23,24 +24,33 @@ public class ByteUtils {
                 (b[0] & 0xFF) << 24;
     }
 
-    /**
-     * TODO unfinished!
-     * @param b
-     * @return
-     */
-    public static int byteArrayToLong(byte[] b) {
-        return b[3] & 0xFF |
-                (b[2] & 0xFF) << 8 |
-                (b[1] & 0xFF) << 16 |
-                (b[0] & 0xFF) << 24;
+    public static byte[] longToByteArray(long x) {
+        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+        buffer.putLong(x);
+        return buffer.array();
     }
 
-    public static int byteArrayToIntL(byte[] b) {
+    public static long byteArrayToLong(byte[] bytes) {
+        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+        buffer.put(bytes);
+        buffer.flip();//need flip
+        return buffer.getLong();
+    }
+
+    public static long byteArrayToLongL(byte[] bytes) {
+        return byteArrayToLong(reverse(bytes));
+    }
+
+    protected static byte[] reverse(byte[] b) {
         byte[] a = new byte[b.length];
         for (int i = 0; i < b.length; i++) {
             a[i] = b[b.length - i - 1];
         }
-        return byteArrayToInt(a);
+        return a;
+    }
+
+    public static int byteArrayToIntL(byte[] b) {
+        return byteArrayToInt(reverse(b));
     }
 
     public static byte[] intToByteArray(int a) {
@@ -90,10 +100,23 @@ public class ByteUtils {
      * @return
      */
     public static short byteArrayToShortL(byte[] address) {
-        byte[] addr = new byte[2];
-        addr[0] = address[1];
-        addr[1] = address[0];
-        return ByteUtils.byteArrayToShort(addr);
+        return ByteUtils.byteArrayToShort(reverse(address));
+    }
+
+    public static String byteArrayNumberToValueString(byte[] value, boolean isLitteEndian) {
+        if (value == null) {
+            return null;
+        }
+
+        if (value.length == 2) {
+            return String.valueOf(isLitteEndian ? ByteUtils.byteArrayToShortL(value) : ByteUtils.byteArrayToShort(value));
+        } else if (value.length == 4) {
+            return String.valueOf(isLitteEndian ? ByteUtils.byteArrayToIntL(value) : ByteUtils.byteArrayToInt(value));
+        } else if (value.length == 8) {
+            return String.valueOf(isLitteEndian ? ByteUtils.byteArrayToLongL(value) : ByteUtils.byteArrayToLong(value));
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -138,5 +161,11 @@ public class ByteUtils {
         byte[] demo = new byte[]{0x01, 0x00, 0x00, 0x00};
         System.out.println(byteArrayToInt(demo));
         System.out.println(byteArrayToIntL(demo));
+
+        // byte to long
+        byte[] longBytes = longToByteArray(15L);
+        LogUtils.log(LogUtils.getBytesString(longBytes));
+        long longValue = byteArrayToLong(longBytes);
+        System.out.println(longValue);
     }
 }
