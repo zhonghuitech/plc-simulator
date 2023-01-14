@@ -2,6 +2,7 @@ package com.sunlent.iot.plc.util;
 
 import java.nio.ByteBuffer;
 import java.util.HexFormat;
+import java.util.List;
 
 /**
  * byte相关的函数
@@ -142,6 +143,24 @@ public class ByteUtils {
         return sb.toString();
     }
 
+    public static byte[] join(List<byte[]> bytes) {
+        if (bytes == null || bytes.size() == 0) {
+            return null;
+        }
+
+        int leng = 0;
+        for (byte[] item : bytes) {
+            leng += item.length;
+        }
+        byte[] result = new byte[leng];
+
+        int idx = 0;
+        for (byte[] item : bytes) {
+            System.arraycopy(item, 0, result, idx, item.length);
+            idx += item.length;
+        }
+        return result;
+    }
     public static byte[] join(byte[]... bytes) {
         int leng = 0;
         for (byte[] item : bytes) {

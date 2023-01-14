@@ -41,15 +41,20 @@ public class PlcSimulatorController {
                 if (ModbusWorker.AREA.equals(regData.getArea())) {
                     byte[] deviceId = new byte[]{0x01};
                     byte[] startAddress = ByteUtils.shortToByteArray((short) Integer.parseInt(regData.getAddress()));
-                    address = ByteUtils.bytesToString(deviceId, startAddress);
-                    byte[] currentAddress = ByteUtils.byteAddressPlus(startAddress, (short) 1);
-                    String ca = ByteUtils.bytesToString(deviceId, currentAddress);
 
-                    byte[] value = SimuData.get(regData.getArea(), address);
-                    // 第二位
-                    byte[] valueCa = SimuData.get(regData.getArea(), ca);
-
-                    v = (value == null || valueCa == null) ? null : ByteUtils.byteArrayNumberToValueString(ByteUtils.join(value, valueCa), false);
+                    List<byte[]> listAddress = new ArrayList<>();
+                    // 这里只是推测其类型，如果先写long，后写int，读取出来的数值会有问题
+                    for (short i = 0; i < 4; i++) {
+                        byte[] currentAddress = ByteUtils.byteAddressPlus(startAddress, i);
+                        address = ByteUtils.bytesToString(deviceId, currentAddress);
+                        byte[] value = SimuData.get(regData.getArea(), address);
+                        if (value != null) {
+                            listAddress.add(value);
+                        } else {
+                            break;
+                        }
+                    }
+                    v = ByteUtils.byteArrayNumberToValueString(ByteUtils.join(listAddress), false);
                 } else {
                     byte[] value = SimuData.get(regData.getArea(), address);
                     boolean isL = false;
