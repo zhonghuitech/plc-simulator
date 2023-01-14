@@ -142,6 +142,21 @@ public class ByteUtils {
         return sb.toString();
     }
 
+    public static byte[] join(byte[]... bytes) {
+        int leng = 0;
+        for (byte[] item : bytes) {
+            leng += item.length;
+        }
+        byte[] result = new byte[leng];
+
+        int idx = 0;
+        for (byte[] item : bytes) {
+            System.arraycopy(item, 0, result, idx, item.length);
+            idx += item.length;
+        }
+        return result;
+    }
+
     public static void main(String[] args) {
         byte[] bytes = new byte[]{(byte) 0xfe, (byte) 0x02, (byte) 0x00, (byte) 0x00};
         System.out.println(byteArrayToInt(bytes));

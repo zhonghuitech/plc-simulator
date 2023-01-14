@@ -17,6 +17,7 @@ import java.net.Socket;
  * @date 2022/12/08 19:16
  */
 public class ModbusWorker extends BaseWorker {
+    public static final String AREA = "MODBUS";
 
     public ModbusWorker(Socket socket) {
         super(socket);
@@ -28,7 +29,7 @@ public class ModbusWorker extends BaseWorker {
 
     @Override
     protected String getArea() {
-        return "MODBUS";
+        return AREA;
     }
 
     @Override
